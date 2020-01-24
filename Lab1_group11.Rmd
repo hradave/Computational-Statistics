@@ -1,6 +1,6 @@
 ---
-title: "Lab1-Group11"
-author: "David Hrabovszki"
+title: "Lab1 Group11"
+author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
 date: "1/24/2020"
 output: pdf_document
 ---
@@ -8,4 +8,86 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+# Question 1
+
+```{r echo = FALSE}
+x1<-1/3
+x2<-1/4
+if (x1-x2==1/12) {
+print ( "Subtraction is correct" )
+} else {
+print ( "Subtraction is wrong")
+}
+```
+
+```{r echo = FALSE}
+x1<-1
+x2<-1/2
+if (x1-x2 ==1/2) {
+  print("Subtraction is correct")
+} else {
+  print("Subtractino is wrong")
+}
+```
+
+## 1.
+
+After running the two code snippets given in the lab pdf, we observe that the first snippet prints "Subtraction is wrong", while the second snippet prints "Subtraction is correct". In both cases they should be mathematically correct, but because floats are rounded in R, the values 1/3 and 1/12 are not precisely represented. Since the two sides are not precisely equal, this will return "Subtraction is wrong".
+
+
+
+## 2.
+
+The problems mentioned in the 1. can be solved by using the functions all.equal() and isTRUE(), where all.equal() tests if two objects are (nearly) equal, in contrast with the == sign which tests perfect equality, and isTRUE() is necessary to handle the FALSE result of all.equal().
+
+The following code snippet prints "Subtraction is correct", which is the correct output.
+```{r}
+x1<-1/3
+x2<-1/4
+if (isTRUE(all.equal(x1-x2,1/12))) {
+print ( "Subtraction is correct" )
+} else {
+print ( "Subtraction is wrong")
+}
+```
+
+
+# Question 2
+
+Using the definition of a derivative, we use the following formula:
+
+$f'(x)=\frac{f(x+\epsilon)-f(x)}{\epsilon}$
+
+
+## 1.
+
+We calculate the derivative of $f(x)=x$, with $\epsilon=10^{-15}$ using our own function (see Appendix).
+
+```{r echo = FALSE}
+f <- function(x) x
+
+epsilon <- 1e-15
+
+derivative <- function(f, x, e){
+  (f(x+epsilon) - f(x))/epsilon
+} 
+
+
+```
+
+## 2. & 3.
+
+Now we evaluate our derivative function at $x=1$ and $x=100000$ and obtain the following results:
+
+```{r echo = FALSE}
+derivative(f, 1, epsilon)
+derivative(f,100000, epsilon)
+```
+
+The true values of the derivatives are 1 for every $x$, and we expect our function to output a value close to 1.
+
+The obtained derivative for $x=1$ is close to the true value, but for large $x$ we get the result 0.
+
+If we consider x within the range [0,1[, we obtain approximately 1. The difference between large numbers, dominates the small epsilon, which gives us zero in the nominator and thus the derivative evaluated at large points is 0. In general, adding small numbers first will give a better accuracy, than adding large number first, which we are doing when using the definition of the derivative.
 
