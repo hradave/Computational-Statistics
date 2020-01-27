@@ -177,8 +177,7 @@ X <- tecator %>%
   as.matrix() %>%
   scale()
 
-# Should y also be scaled??
-y <- tecator$Protein
+y <- as.vector(scale(tecator$Protein))
 
 # Solving the linear system
 A <- t(X)%*%X
@@ -186,5 +185,6 @@ b <- t(X)*y
 
 solve(A,b) # works
 
+det(A)
 # Check the condition numbers
 kappa(A) # high condition number indicates bad sign of solving the linear system 
