@@ -75,9 +75,28 @@ b <- t(X) %*% y #102x1
 solve(a=A, b=b)
 #system is computationally singular: reciprocal condition number = 7.13971e-17
 
+#Matrix A in not invertible (which is what solve is trying to do)
+det(A) #=0
+
+
 #4
 kappa(A)
 #1.157834e+15
+
+#Since A has no inverse, kappa(A) is using pseudo-inverse instead.
+
+#The condition number gives a sense of how sensitive numerical results are to small errors in the input.
+#A large condition number means the system will be more prone to small errors. 
+#A small condition number means that small errors in the input will only lead to small errors in the output.
+
+#Large kappa implies that the algorithm is numerically unstable.
+
+# This kind of apparent ill-conditioning is called artificial ill-conditioning.
+# It is due to the different rows (or columns) of the matrix having a very different
+# scale; the condition number can be changed just by scaling the rows or
+# columns. This usually does not make a linear system any better or any worse
+# conditioned, but this fact emphasizes the importance of scaling in data analysis.
+#(from the book p.208)
 
 #5
 data_scaled <- scale(data)
@@ -91,5 +110,6 @@ b_scaled <- t(X_scaled) %*% y_scaled #102x1
 
 solve(a=A_scaled, b=b_scaled)
 #works
+det(A_scaled) #why is this still 0?
 
 kappa(A_scaled) #490471520662

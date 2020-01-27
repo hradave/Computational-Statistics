@@ -5,18 +5,21 @@ date: "1/24/2020"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Question 1
 
-```{r echo = FALSE}
+## 1.
+
+```{r echo = FALSE, warning=FALSE}
 RNGversion('3.5.1')
 
 # Seed
 set.seed(1234567890)
 
+#1.1
 
 x1<-1/3
 x2<-1/4
@@ -37,8 +40,6 @@ if (x1-x2 ==1/2) {
 }
 ```
 
-## 1.
-
 After running the two code snippets given in the lab pdf, we observe that the first snippet prints "Subtraction is wrong", while the second snippet prints "Subtraction is correct". In both cases they should be mathematically correct, but because floats are rounded in R, the values 1/3 and 1/12 are not precisely represented. Since the two sides are not precisely equal, this will return "Subtraction is wrong".
 
 
@@ -49,6 +50,8 @@ The problems mentioned in the 1. can be solved by using the functions all.equal(
 
 The following code snippet prints "Subtraction is correct", which is the correct output.
 ```{r}
+#1.2
+
 x1<-1/3
 x2<-1/4
 if (isTRUE(all.equal(x1-x2,1/12))) {
@@ -61,7 +64,7 @@ print ( "Subtraction is wrong")
 
 # Question 2
 
-Using the definition of a derivative, we use the following formula:
+Using the definition of a derivative, we use the following formula at point $x$ with small $\epsilon$:
 
 $f'(x)=\frac{f(x+\epsilon)-f(x)}{\epsilon}$
 
@@ -71,6 +74,8 @@ $f'(x)=\frac{f(x+\epsilon)-f(x)}{\epsilon}$
 We calculate the derivative of $f(x)=x$, with $\epsilon=10^{-15}$ using our own function (see Appendix).
 
 ```{r echo = FALSE}
+#2.1
+
 f <- function(x) x
 
 epsilon <- 1e-15
@@ -87,6 +92,8 @@ derivative <- function(f, x, e){
 Now we evaluate our derivative function at $x=1$ and $x=100000$ and obtain the following results:
 
 ```{r echo = FALSE}
+#2.2 & 2.3
+
 derivative(f, 1, epsilon)
 derivative(f,100000, epsilon)
 ```
@@ -99,6 +106,97 @@ If we consider x within the range [0,1[, we obtain approximately 1. The differen
 
 # Question 3
 
-## 1.
+A known formula for estimating the variance based on a vector of n observations is
 
 $Var(\vec{x})=\frac{1}{n-1}\Bigg{(}\sum^{n}\limits_{i=1}x^2_i-\frac{1}{n}\Big{(}\sum^{n}\limits_{i=1}x_i\Big{)}^2\Bigg{)}$
+
+## 1.
+
+Write your own R function, myvar, to estimate the variance in this way.
+
+## 2.
+
+Generate a vector $x=(x_1,...,x_{10000})$ with 10000 random numbers with mean $10^8$ and
+variance 1.
+
+## 3.
+
+For each subset $X_i=\{x_1,...,x_i\},i=1,...,10000$ compute the difference $Y_i=myvar(X_i)-var(X_i)$, where $var(X_i)$ is the standard variance estimation function in R.
+
+## 4.
+
+
+# Question 4
+
+## 1.
+
+Import the data set to R.
+
+```{r}
+#4.1
+
+
+```
+
+
+## 2.
+
+Optimal regression coefficients can be found by solving a system of the type 
+$A\vec{\beta}=\vec{b}$ 
+where 
+$A=X^TX$
+and 
+$\vec{b}=X^T\vec{y}$
+. The matrix 
+$X$
+are the
+observations of the absorbance records, levels of moisture and fat, while 
+$\vec{y}$
+are the protein levels.
+
+```{r}
+#4.2
+
+
+```
+
+
+## 3.
+
+Try to solve $A\vec{\beta}=\vec{b}$ with default solver solve().
+
+```{r}
+#4.3
+
+```
+
+
+## 4.
+
+Check the condition number of the matrix $A$.
+
+The condition number $\kappa$ of square matrix A is:
+$||A||\space||A^{-1}||$
+
+```{r}
+#4.4
+
+```
+
+
+## 5.
+
+Scale the data set and repeat steps 2-4.
+
+```{r}
+#4.5
+
+```
+
+
+
+# Appendix
+
+```{r ref.label=knitr::all_labels(),echo=TRUE,eval=FALSE}
+
+```
