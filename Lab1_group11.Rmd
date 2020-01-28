@@ -107,6 +107,8 @@ Var(\vec{x})=\frac{1}{n-1}\Bigg{(}\sum^{n}\limits_{i=1}x^2_i-\frac{1}{n}\Big{(}\
 We write our own R function, \texttt{myvar}, to estimate the variance as given above.
 
 ```{r echo = FALSE, include=FALSE}
+#3.1
+
 # Variance function
 myvar <- function(x) {
   n <-length(x)
@@ -120,6 +122,7 @@ Then we generate $10000$ normally distributed random numbers, $x=(x_1,...,x_{100
 variance $1$. 
 
 ```{r echo = FALSE, include=FALSE}
+#3.2
 
 # Seed
 set.seed(1234567890)
@@ -132,6 +135,8 @@ x <- rnorm(10000, mean = 10^8 , sd = 1)
 The variance can be calculated directly in R by using the standard variance estimation function \texttt{var()}. In this task we will compute the difference $Y_i=$\texttt{myvar}$(X_i)-$\texttt{var}$(X_i)$, for each subset $X_i=\{x_1,...,x_i\}, \ i=1,...,10000$.
 
 ```{r echo = FALSE}
+#3.3
+
 # Packages
 library(ggplot2) # For plotting
 
@@ -154,7 +159,7 @@ ggplot(df, aes(x = i, y = Y)) +
 ```
 
 
-From Figure \ref{fig:variance1} we can observe that our implemented function \texttt{myvar()} does not work as expected. When subracting the two functions we would obtain zero if they give the same result, but when we look at the plot we can conclude that they perform differently. The reason of why this is happening is because when adding two large numbers of almost equal magnitude of opposite signs, there will be a cancellation. These cancellations can accumulate, therefore we should use a different function when computing the variance. 
+From Figure \ref{fig:variance1} we can observe that our implemented function \texttt{myvar()} does not work as expected. When subracting the two functions we would obtain zero if they give the same result, but when we look at the plot we can conclude that they perform differently. The reason for why this is happening is because when adding two large numbers of almost equal magnitude of opposite signs, there will be a cancellation. These cancellations can accumulate, therefore we should use a different function when computing the variance. 
 
 
 
@@ -267,7 +272,7 @@ The condition number $\kappa$ of square matrix $\boldsymbol{A}$ is given by $||\
 kappa(A) 
 ```
 
-The condition number of $\boldsymbol{A}$ is approximately $1.1578\cdot 10^{15}$. This is a bad sign since the value is very large. A large condition number indicates that the algorithm is numerically unstable, which means that small changes in the inputs results in large changes in the output. However, this does not necessarily leads to ill-conditioning. The problem of solving the system as mentioned in Question 4.3 is due to this observation of a large condition number. 
+The condition number of $\boldsymbol{A}$ is approximately $1.1578\cdot 10^{15}$. This is a bad sign since the value is very large. A large condition number indicates that the algorithm is numerically unstable, which means that small changes in the inputs results in large changes in the output. However, this does not necessarily lead to ill-conditioning. The problem of solving the system as mentioned in Question 4.3 is due to this observation of a large condition number. 
 
 
 ### 5.
