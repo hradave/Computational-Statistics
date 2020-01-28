@@ -116,17 +116,17 @@ myvar <- function(x){
 x <- rnorm(10000, mean = 10^8 , sd = 1)
 
 # Difference between the different funtions for the variance, for each subset
-y <- c()
+Y <- c()
 for (i in seq_along(x)){
-  y[i] <- myvar(x[1:i]) - var(x[1:i])
+  Y[i] <- myvar(x[1:i]) - var(x[1:i])
 }
 
 # Create data frame
-df <- data.frame(i=seq_along(x), y)
+df <- data.frame(i = seq_along(x), y)
 
 # Plot the results
-ggplot(df, aes(x=i, y=y)) +
-  geom_point()
+ggplot(df, aes(x = i, y=y)) +
+  geom_point() 
 
 # Second implementation of the variance
 myvar2 <- function(x){

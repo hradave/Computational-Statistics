@@ -1,8 +1,10 @@
 ---
 title: "Lab1 Group11"
 author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
-date: "1/24/2020"
-output: pdf_document
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document:
+      fig_caption: yes
 ---
 
 ```{r setup, include=FALSE, warning=FALSE}
@@ -12,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Question 1: Be careful when comparing
 In this task, we are given two R code snippets, each consisting of a comparision of rational numbers. The first code snippet compares $\frac{1}{3}-\frac{1}{4}$ with $\frac{1}{12}$, and the second code snippet compares $1-\frac{1}{2}$ with $\frac{1}{2}$. For both code snippets, the comparison is performed by the logical operator \texttt{==}, and prints an output, which is either "Subtraction is correct" or "Subtraction is wrong". The code snippets can be found in the Appendix. 
 
-## 1. 
+### 1. 
 
 ```{r echo = FALSE, warning=FALSE, include=FALSE}
 #1.1
@@ -22,7 +24,7 @@ x2 <- 1/4
 if (x1-x2 == 1/12) {
   print("Subtraction is correct" )
 } else {
-    print("Subtraction is wrong")
+  print("Subtraction is wrong")
 }
 
 # Second code snippet. 
@@ -39,15 +41,14 @@ After running the two code snippets, we observe that the first snippet prints th
 
 
 
-## 2.
+### 2.
 
 The code causes problems as already mentioned in Question 1, which confirmes that comparisons should be carried out carefully. One suggestion of improvement is to use the functions \texttt{all.equal()} and \texttt{isTRUE()}, instead of the logical operator \texttt{==}. The function \texttt{all.equal()} tests if two objects are nearly equal, in contrast to \texttt{==} which tests exact equality. The funciton \texttt{isTRUE()} is necessary to handle the \texttt{FALSE} result of \texttt{all.equal()} in the \texttt{if} statement. This improvement of the code snippet (see Appendix) prints "Subtraction is correct" when comparing $\frac{1}{3}-\frac{1}{4}$ with $\frac{1}{12}$, which is the mathematically correct output. 
 
 
 ```{r echo = FALSE, warning=FALSE, include=FALSE}
 #1.2
-# Suggestion of improvement
-# using all.equal() and isTRUE()
+# Improvement using all.equal() and isTRUE()
 x1 <- 1/3
 x2 <- 1/4
 if (isTRUE(all.equal(x1-x2, 1/12))) {
@@ -58,104 +59,128 @@ if (isTRUE(all.equal(x1-x2, 1/12))) {
 ```
 
 
-# Question 2
+# Question 2: Derivative
 
-Using the definition of a derivative, we use the following formula at point $x$ with small $\epsilon$:
-
-$f'(x)=\frac{f(x+\epsilon)-f(x)}{\epsilon}$
+ We are going to write our own R function of the definition of a derivative at a point $x$ with a small $\epsilon$, given by the formula $f'(x)=\frac{f(x+\epsilon)-f(x)}{\epsilon}$.
 
 
-## 1.
+### 1.
 
-We calculate the derivative of $f(x)=x$, with $\epsilon=10^{-15}$ using our own function (see Appendix).
+We calculate the derivative of $f(x)=x$, with $\epsilon=10^{-15}$ using our own R function (see Appendix).
 
-```{r echo = FALSE}
+```{r echo = FALSE, include=FALSE}
 #2.1
-
+# Function f(x)
 f <- function(x) x
 
 epsilon <- 1e-15
 
+# Definition of derivative
 derivative <- function(f, x, e){
-  (f(x+epsilon) - f(x))/epsilon
+  (f(x + e) - f(x))/e
 } 
 
 
 ```
 
-## 2. & 3.
+### 2. and 3.
 
-Now we evaluate our derivative function at $x=1$ and $x=100000$ and obtain the following results:
-
-```{r echo = FALSE}
+```{r echo = FALSE, include=FALSE}
 #2.2 & 2.3
-
 derivative(f, 1, epsilon)
 derivative(f,100000, epsilon)
 ```
+Now we evaluate our derivative function at $x=1$ and $x=100000$ and obtain the results $f'(1)=1.110223$ and $f'(100000)=0$ from the output. The true values of the derivatives are $1$ for every $x$, and we expect our function to output a value close to $1$. The obtained derivative for $x=1$ is close to the true value, but for large $x$ we get the result 0. If we consider $x$ within the range $[0,1[$, we obtain approximately 1. However, when using larger values of $x$, the difference between large numbers, dominates the small epsilon, which gives us zero in the numerator and thus the derivative evaluated at large points is 0. In general, adding small numbers first will give a better accuracy, than adding large number first, which we are doing when using the definition of the derivative. 
 
-The true values of the derivatives are 1 for every $x$, and we expect our function to output a value close to 1.
+# Question 3: Variance
 
-The obtained derivative for $x=1$ is close to the true value, but for large $x$ we get the result 0.
+The variance based on a vector $\vec{x}$ of $n$ observations can be estimated by using the formula
 
-If we consider x within the range [0,1[, we obtain approximately 1. The difference between large numbers, dominates the small epsilon, which gives us zero in the nominator and thus the derivative evaluated at large points is 0. In general, adding small numbers first will give a better accuracy, than adding large number first, which we are doing when using the definition of the derivative.
+\begin{equation}
+Var(\vec{x})=\frac{1}{n-1}\Bigg{(}\sum^{n}\limits_{i=1}x^2_i-\frac{1}{n}\Big{(}\sum^{n}\limits_{i=1}x_i\Big{)}^2\Bigg{)}.
+\end{equation}
 
-# Question 3
+### 1.
 
-A known formula for estimating the variance based on a vector of n observations is
+We write our own R function, \texttt{myvar}, to estimate the variance as given above.
 
-$Var(\vec{x})=\frac{1}{n-1}\Bigg{(}\sum^{n}\limits_{i=1}x^2_i-\frac{1}{n}\Big{(}\sum^{n}\limits_{i=1}x_i\Big{)}^2\Bigg{)}$
+```{r echo = FALSE, include=FALSE}
+# Variance function
+myvar <- function(x) {
+  n <-length(x)
+  1/(n-1) * (sum(x^2) - sum(x)^2/n)
+}
+```
 
-## 1.
+### 2.
 
-Write your own R function, myvar, to estimate the variance in this way.
+Then we generate $10000$ normally distributed random numbers, $x=(x_1,...,x_{10000})$, with mean $10^8$ and
+variance $1$. 
 
-```{r}
-RNGversion('3.5.1')
+```{r echo = FALSE, include=FALSE}
+RNGversion('3.6.1')
 
 # Seed
 set.seed(1234567890)
+
+# Generate random numbers
+x <- rnorm(10000, mean = 10^8 , sd = 1)
 ```
 
-## 2.
+### 3.
+The variance can be calculated directly in R by using the standard variance estimation function \texttt{var()}. In this task we will compute the difference $Y_i=$\texttt{myvar}$(X_i)-$\texttt{var}$(X_i)$, for each subset $X_i=\{x_1,...,x_i\}, \ i=1,...,10000$.
 
-Generate a vector $x=(x_1,...,x_{10000})$ with 10000 random numbers with mean $10^8$ and
-variance 1.
+```{r echo = FALSE}
+# Packages
+library(ggplot2) # For plotting
 
-## 3.
+# Difference between the different functions of the variance, for each subset
+Y <- c()
+for (i in seq_along(x)){
+  Y[i] <- myvar(x[1:i]) - var(x[1:i])
+}
 
-For each subset $X_i=\{x_1,...,x_i\},i=1,...,10000$ compute the difference $Y_i=myvar(X_i)-var(X_i)$, where $var(X_i)$ is the standard variance estimation function in R.
+# Create data frame
+df <- data.frame(i = seq_along(x), Y)
+```
 
-## 4.
+```{r echo = FALSE, warning=FALSE, fig.cap="\\label{fig:variance1} Difference between the functions myvar($X_i$) and var($X_i$)", out.width = "80%"}
+# Plot the results
+ggplot(df, aes(x = i, y = Y)) +
+  geom_point() +
+  theme_bw() + 
+  xlab("X")
+```
 
 
-# Question 4
+From Figure \ref{fig:variance1} we can observe that...
 
-## 1.
 
-Import the data set to R.
+
+### 4.
+
+A better way to implement a variance estimator is to use the formula ... 
+
+
+# Question 4: Linear algebra
+
+### 1.
+
+In the last question we will use a data set consisting of a study with the purpose to predict the protein content of 215 meat samples, given the explanatory variables infrared absorbance spectrum, the levels of moisture and fat. Firstly, we import the data set \texttt{tecator.csv} to R.
+
 
 ```{r}
 #4.1
-
+# Import data
+data <- read.csv(file="tecator.csv")
 
 ```
 
 
-## 2.
+### 2.
 
-Optimal regression coefficients can be found by solving a system of the type 
-$A\vec{\beta}=\vec{b}$ 
-where 
-$A=X^TX$
-and 
-$\vec{b}=X^T\vec{y}$
-. The matrix 
-$X$
-are the
-observations of the absorbance records, levels of moisture and fat, while 
-$\vec{y}$
-are the protein levels.
+The optimal regression coefficients of a linear regression model can be obtained by solving $\boldsymbol{A}\vec{\beta}=\vec{b}$, where $\boldsymbol{A}=\boldsymbol{X}^T\boldsymbol{X}$ and $\vec{b}=\boldsymbol{X}^T\vec{y}$. The columns in the matrix $\boldsymbol{X}$ are the observations of the absorbance records, levels of moisture and fat, and the response $\vec{y}$ is the protein levels of the meat samples. We compute $\boldsymbol{A}$ and $\vec{b}$ for the data set. 
+
 
 ```{r}
 #4.2
@@ -164,9 +189,11 @@ are the protein levels.
 ```
 
 
-## 3.
+### 3.
 
-Try to solve $A\vec{\beta}=\vec{b}$ with default solver solve().
+Now we will try to use the function \texttt{solve()}, in order to solve $A\vec{\beta}=\vec{b}$. 
+
+
 
 ```{r}
 #4.3
@@ -174,12 +201,10 @@ Try to solve $A\vec{\beta}=\vec{b}$ with default solver solve().
 ```
 
 
-## 4.
+### 4.
 
-Check the condition number of the matrix $A$.
 
-The condition number $\kappa$ of square matrix A is:
-$||A||\space||A^{-1}||$
+The condition number $\kappa$ of square matrix $\boldsymbol{A}$ is given by $||\boldsymbol{A}||\space||\boldsymbol{A}^{-1}||$, where a high condition number indicates multicollinearity. A matrix with less than full rank is not invertible, i.e. singular. 
 
 ```{r}
 #4.4
@@ -187,7 +212,7 @@ $||A||\space||A^{-1}||$
 ```
 
 
-## 5.
+### 5.
 
 Scale the data set and repeat steps 2-4.
 
