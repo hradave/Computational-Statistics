@@ -1,5 +1,6 @@
 ---
-title: "Lab1 Group11"
+title: "732A90: Computational Statistics"
+subtitle: "Computer lab1 - Group11"
 author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
@@ -17,6 +18,7 @@ In this task, we are given two R code snippets, each consisting of a comparision
 ### 1. 
 
 ```{r echo = FALSE, warning=FALSE, include=FALSE}
+RNGversion('3.5.1')
 #1.1
 # First code snippet
 x1 <- 1/3
@@ -118,7 +120,6 @@ Then we generate $10000$ normally distributed random numbers, $x=(x_1,...,x_{100
 variance $1$. 
 
 ```{r echo = FALSE, include=FALSE}
-RNGversion('3.6.1')
 
 # Seed
 set.seed(1234567890)
@@ -153,13 +154,52 @@ ggplot(df, aes(x = i, y = Y)) +
 ```
 
 
-From Figure \ref{fig:variance1} we can observe that...
+From Figure \ref{fig:variance1} we can observe that our implemented function \texttt{myvar()} does not work as expected. When subracting the two functions we would obtain zero if they give the same result, but when we look at the plot we can conclude that they perform differently. The reason of why this is happening is because when adding two large numbers of almost equal magnitude of opposite signs, there will be a cancellation. These cancellations can accumulate, therefore we should use a different function when computing the variance. 
 
 
 
 ### 4.
 
-A better way to implement a variance estimator is to use the formula ... 
+A better way to implement a variance estimator is to use the formula $\text{Var}(\vec{x})=\frac{\sum_{i=1}^n (x_i - \overline{x})^2}{n-1}$, from Definition 1.2 in Mathematical Statistics with Applications by Wackerly et al. We will define this new variance estimator as \texttt{myvar2()}. 
+
+```{r echo = FALSE}
+# 3.4
+# Second implementation of the variance
+myvar2 <- function(x) {
+  n <- length(x)
+  avg <- mean(x)
+  s <- 0
+  
+  for (j in 1:n) {
+    s <- s + (x[j] - avg)^2
+  }
+  
+  return(s / (n - 1))
+}
+
+# Difference between the different funtions for the variance, for each subset
+Y2 <- c()
+for (i in seq_along(x)){
+  Y2[i] <- myvar2(x[1:i]) - var(x[1:i])
+}
+
+
+# Create data frame
+df2 <- data.frame(i = seq_along(x), Y2)
+
+```
+
+```{r echo = FALSE, warning=FALSE, fig.cap="\\label{fig:variance2} Difference between the functions myvar2($X_i$) and var($X_i$)", out.width = "80%"}
+# Plot the results
+ggplot(df2, aes(x = i, y = Y2)) +
+  geom_point() + 
+  theme_bw() + 
+  xlab("X") + 
+  ylab("Y") + 
+  ylim(c(-0.001,0.001))
+```
+
+From Figure \ref{fig:variance2} we can see that the new implemeted function \texttt{myvar2()} is a better variance estimator compared to \texttt{myvar()}, because it gives the same results as the function \texttt{var()}. 
 
 
 # Question 4: Linear algebra
@@ -169,11 +209,10 @@ A better way to implement a variance estimator is to use the formula ...
 In the last question we will use a data set consisting of a study with the purpose to predict the protein content of 215 meat samples, given the explanatory variables infrared absorbance spectrum, the levels of moisture and fat. Firstly, we import the data set \texttt{tecator.csv} to R.
 
 
-```{r}
+```{r echo = FALSE}
 #4.1
 # Import data
-data <- read.csv(file="tecator.csv")
-
+data <- read.csv(file = "tecator.csv")
 ```
 
 
@@ -182,11 +221,23 @@ data <- read.csv(file="tecator.csv")
 The optimal regression coefficients of a linear regression model can be obtained by solving $\boldsymbol{A}\vec{\beta}=\vec{b}$, where $\boldsymbol{A}=\boldsymbol{X}^T\boldsymbol{X}$ and $\vec{b}=\boldsymbol{X}^T\vec{y}$. The columns in the matrix $\boldsymbol{X}$ are the observations of the absorbance records, levels of moisture and fat, and the response $\vec{y}$ is the protein levels of the meat samples. We compute $\boldsymbol{A}$ and $\vec{b}$ for the data set. 
 
 
-```{r}
+```{r echo = FALSE, warning=FALSE, include=FALSE}
 #4.2
+library(tidyverse)
 
+y <- data$Protein
+X <- data %>%
+  select(-c(Sample, Protein)) %>%
+  as.matrix() 
 
+# Computing A and b by matrix multiplication 
+A <- t(X)%*%X
+b <- t(X)*y
 ```
+
+
+
+
 
 
 ### 3.
@@ -194,33 +245,58 @@ The optimal regression coefficients of a linear regression model can be obtained
 Now we will try to use the function \texttt{solve()}, in order to solve $A\vec{\beta}=\vec{b}$. 
 
 
-
-```{r}
+```{r, echo=FALSE}
 #4.3
+# Solving the linear system
+#solve(A,b) 
 
 ```
+
+The \texttt{solve()} function returns the error message "Error in solve.default(A, b) : system is computationally singular: reciprocal condition number = 7.13971e-17", which means that matrix $\boldsymbol{A}$ is not invertible. Therefore the system cannot be solved. We suspect that the columns in $\boldsymbol{A}$ could be linearly dependent or correlated which means that it has less than full rank, and hence not invertible. 
 
 
 ### 4.
 
 
-The condition number $\kappa$ of square matrix $\boldsymbol{A}$ is given by $||\boldsymbol{A}||\space||\boldsymbol{A}^{-1}||$, where a high condition number indicates multicollinearity. A matrix with less than full rank is not invertible, i.e. singular. 
+The condition number $\kappa$ of square matrix $\boldsymbol{A}$ is given by $||\boldsymbol{A}||\space||\boldsymbol{A}^{-1}||$, which gives an indication of how sensitive numerical results are to small errors in the input. Even though $\boldsymbol{A}$ is not invertible, the \texttt{kappa()} function still can compute the condition number. This is because it uses psuedo-inverse when inverting is not possible.
 
-```{r}
+
+```{r echo = FALSE, warning=FALSE, include=FALSE}
 #4.4
-
+# Check the condition numbers
+kappa(A) 
 ```
+
+The condition number of $\boldsymbol{A}$ is approximately $1.1578\cdot 10^{15}$. This is a bad sign since the value is very large. A large condition number indicates that the algorithm is numerically unstable, which means that small changes in the inputs results in large changes in the output. However, this does not necessarily leads to ill-conditioning. The problem of solving the system as mentioned in Question 4.3 is due to this observation of a large condition number. 
 
 
 ### 5.
 
-Scale the data set and repeat steps 2-4.
+In the final question we will scale the data set and repeat steps 2-4.
 
-```{r}
+```{r echo = FALSE, warning=FALSE, include=FALSE}
 #4.5
+# Improve the results by scaling
+X <- data %>%
+  select(-c(Sample, Protein)) %>%
+  as.matrix() %>%
+  scale()
+
+y <- as.vector(scale(data$Protein))
+
+# Computing A and b by matrix multiplication 
+A <- t(X)%*%X
+b <- t(X)*y
+
+# Solving the linear system
+solve(A,b) 
+
+# Check the condition numbers
+kappa(A) 
 
 ```
 
+When we scaled the data we obtained a smaller condition number, $490471520662$, and solving the system with \texttt{solve()} is working since the $\boldsymbol{A}$ is now invertible. This can be explained by the fact that the columns of the original $\boldsymbol{A}$ have very different scale, according to Computational Statistics by James E. Gentle. The condition number can be changed when scaling the data, which explains the change in the result. 
 
 
 # Appendix
