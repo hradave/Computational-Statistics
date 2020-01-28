@@ -1,0 +1,18 @@
+---
+title: "Lab2 Group11"
+author: "Group 10"
+date: "28/01/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE, eval=TRUE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1: Optimizing a model parameter
+
+```{r}
+
+```
+
+
