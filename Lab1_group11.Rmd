@@ -39,7 +39,7 @@ if (x1-x2 == 1/2) {
 }
 ```
 
-After running the two code snippets, we observe that the first snippet prints the output "Subtraction is wrong", while the second snippet prints "Subtraction is correct". In both cases, the comparisions should be mathematically correct, but since floats are rounded in R, the values $\frac{1}{3}$ and $\frac{1}{12}$ are not precisely represented. In other words, all the repeating decimals cannot be stored in R so the value is rounded. Since the snippets use the logical operator \texttt{==}, corresponding to exactly equality, this implies that the two sides in the second snippet are not precisely equal. Thus it will return "Subtraction is wrong".
+After running the two code snippets, we observe that the first snippet prints the output "Subtraction is wrong", while the second snippet prints "Subtraction is correct". In both cases, the comparisions should be mathematically correct, but since floats are rounded in R, the values $\frac{1}{3}$ and $\frac{1}{12}$ are not precisely represented. In other words, all the repeating decimals cannot be stored in R so the value is rounded. Since the snippets use the logical operator \texttt{==}, corresponding to exactly equality, this implies that the two sides in the first snippet are not precisely equal. Thus it will return "Subtraction is wrong".
 
 
 
