@@ -55,7 +55,7 @@ for (i in 1:10000) {
   Y[i] <- myvar2(x[1:i]) - var(x[1:i])
 }
 
-plot(x=1:10000, y=Y)
+plot(x=1:10000, y=Y, ylim=c(-0.0001,0.0001))
 
 
 
