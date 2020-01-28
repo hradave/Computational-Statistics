@@ -6,6 +6,8 @@ date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
   pdf_document:
       fig_caption: yes
+header-includes:
+- \usepackage{float}
 ---
 
 ```{r setup, include=FALSE, warning=FALSE}
@@ -150,7 +152,7 @@ for (i in seq_along(x)){
 df <- data.frame(i = seq_along(x), Y)
 ```
 
-```{r echo = FALSE, warning=FALSE, fig.cap="\\label{fig:variance1} Difference between the functions myvar($X_i$) and var($X_i$)", out.width = "80%"}
+```{r echo = FALSE, warning=FALSE, fig.cap="\\label{fig:variance1} Difference between the functions myvar($X_i$) and var($X_i$)", out.width = "80%",fig.pos='h'}
 # Plot the results
 ggplot(df, aes(x = i, y = Y)) +
   geom_point() +
@@ -194,7 +196,7 @@ df2 <- data.frame(i = seq_along(x), Y2)
 
 ```
 
-```{r echo = FALSE, warning=FALSE, fig.cap="\\label{fig:variance2} Difference between the functions myvar2($X_i$) and var($X_i$)", out.width = "80%"}
+```{r echo = FALSE, warning=FALSE, fig.cap="\\label{fig:variance2} Difference between the functions myvar2($X_i$) and var($X_i$)", out.width = "80%", fig.pos='h'}
 # Plot the results
 ggplot(df2, aes(x = i, y = Y2)) +
   geom_point() + 
