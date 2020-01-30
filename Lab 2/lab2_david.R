@@ -70,10 +70,41 @@ MSE_min2$counts[1] #1 function call to myMSE()
 # Question 2: Maximizing likelihood
 
 ### 1.
-#load("D:/LiU/Semester 2/Period 1/Computational Statistics/Computational-Statistics/Lab 2/data.RData")
+load("D:/LiU/Semester 2/Period 1/Computational Statistics/Computational-Statistics/Lab 2/data.RData")
 
 ### 2.
+library(plotly)
 
+#log-likelihood function:
+#https://www.statlect.com/fundamentals-of-statistics/normal-distribution-maximum-likelihood
+
+loglikelihood <- function(mu, sigma, data){
+  n <- length(data)
+  
+  -n/2*log(2*pi) - n/2*log(sigma^2) - 1/(2*sigma^2)*sum((data - mu)^2)
+}
+
+
+##experimenting
+mu_vec <- seq(-2,3,0.1)
+sigma_vec <- seq(0.1,5.1, 0.1)
+
+loglike_vec <- matrix(nrow=length(mu_vec), ncol=length(sigma_vec))
+
+for (i in 1:length(mu_vec)) {
+  for (j in 1:length(sigma_vec)) {
+    loglike_vec[i,j] <- loglikelihood(mu_vec[i],sigma_vec[j],data)
+    print(i)
+    print(j)
+    }
+  }
+
+plot(x=mu_vec,y=loglike_vec)
+loglike_df <- data.frame(mu_vec,sigma_vec,loglike_vec)
+
+plot_ly(z = as.matrix(loglike_vec)) %>% add_surface()
+
+plot_ly(z = volcano, type = "surface")
 ### 3.
 
 ### 4.
