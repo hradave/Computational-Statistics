@@ -2,7 +2,9 @@
 title: "Lab2 Group11"
 author: "Group 10"
 date: "28/01/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE, eval=TRUE, echo=FALSE}
@@ -11,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Question 1: Optimizing a model parameter
 
-```{r}
+```{r, echo=FALSE}
 # R version
 RNGversion('3.5.1')
 ```
@@ -38,9 +40,53 @@ RNGversion('3.5.1')
 
 # Question 2: Maximizing likelihood
 
-### 1.
+(Started to write question 2.1 - 2.2 / Sofie) 
 
-### 2.
+### 1. 
+In this task we will use the file \texttt{data.RData} consists of a sample coming from normal distribution with parameters $\mu$ and $\sigma$. First we load the data set into R. 
+
+### 2. 
+
+The sample comes from a normal distribution with parameters $\mu$ and $\sigma$, where we set $\theta = (\mu,\sigma)$. Under the assumption that the sample $\boldsymbol{x}=(x_1,...,x_{100})$ is iid, i.e. $\boldsymbol{X_i} \stackrel{iid}\sim N(\mu, \sigma^2)$, for $i=1,...,100$, then the joint density function of all $n=100$ observations can be written as
+
+$$
+L(\theta; \boldsymbol{x})=f(\boldsymbol{x}| \theta) = \prod_{i=1}^{100} f(x_i|\theta).
+$$
+
+Now we let the number of observations be denoted by $n$ in the following derivations. Using the density function of a normal distribution with parameter $\theta$ we obtain the likelihood function
+
+$$
+L(\theta; \boldsymbol{x})= \prod_{i=1}^{n} \frac{1}{\sigma\sqrt{2\pi}}\ \text{exp}\bigg\{{-\frac{1}{2}\bigg(\frac{x_i-\mu}{\sigma}\bigg)^2}\bigg\}.
+$$
+
+The log-likelihood function is given by
+
+$$
+l(\theta; \boldsymbol{x}) = \text{log} \ L (\theta; \boldsymbol{x})
+= -\frac{n}{2}\log(2\pi\sigma^2) -\frac{1}{2\sigma^2}\sum_{i=1}^{n} (x_i - \mu)^2.
+$$
+
+The maximum likelihood estimators (MLEs) $\hat{\mu}_{ML}$ and $\hat{\sigma}^2_{ML}$ of $\mu$ and $\sigma^2$ are obtained by maximizing the likelihood function. This is done by differentiating the log-likelihood functions and put them to zero. In more detail, we calculate the score functions $S(\theta; \boldsymbol{x})$ w.r.t. $\mu$ and $\sigma$ seperately, and let them equal zero and solve for each parameter:
+
+$$
+S(\mu)= \frac{\partial}{\partial\mu}\ l(\theta;\boldsymbol{x}) = -\frac{n(\overline{x}-\mu)}{\sigma^2}=0,
+$$
+ where $\overline{x} = \frac{1}{n}\sum_{i=1}^n x_i$. From this we obtain $\hat{\mu}_{ML} = \overline{x}$. Further, 
+ 
+ 
+$$
+S(\sigma)= \frac{\partial}{\partial\sigma}\ l(\theta;\boldsymbol{x}) = -\frac{n}{\sigma} + \frac{1}{\sigma^3}\sum_{i=1}^n(x_i-\mu)^2=0,
+$$
+
+
+
+
+and $\hat{\sigma}^2_{ML} = \frac{1}{n}\sum_{i=1}^n (x_i- \mu)^2$.
+
+
+Then we use the derived formulas in order to obtain the desired parameter estimates for the loaded data. So the data set with 100 observations gives the result $\hat{\mu}_{ML}=1.275528$ and $\hat{\sigma}_{ML}=2.005976$. 
+
+
 
 ### 3.
 
