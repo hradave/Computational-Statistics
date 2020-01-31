@@ -1,14 +1,17 @@
 ---
-title: "Lab2 Group11"
-author: "Group 10"
-date: "28/01/2020"
+title: "732A90: Computational Statistics"
+subtitle: "Computer lab2 - Group11"
+author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
+date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
-  pdf_document: default
-  html_document: default
+  pdf_document:
+      fig_caption: yes
+header-includes:
+- \usepackage{float}
 ---
 
 ```{r setup, include=FALSE, eval=TRUE, echo=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 # Question 1: Optimizing a model parameter
@@ -16,6 +19,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, echo=FALSE, warning=FALSE}
 # R version
 RNGversion('3.5.1')
+#libraries
+library(ggplot2)
 ```
 
 The aim of the first question is to perform optimization by using a data set, \texttt{mortality rate.csv}, consisting of information about the mortality rates of fruit flies during an observed period. 
@@ -24,23 +29,144 @@ The aim of the first question is to perform optimization by using a data set, \t
 
 First, we import the file to R, and then add a variable called \texttt{LMR} to the data set. The new defined variable \texttt{LMR} is the natural logarithm of \texttt{Rate}. Thereafter, we split the data into a training set and a test sets, respectively. The splitting is done using the code which is already given (see Appendix). 
 
+```{r}
+# Question 1: Optimizing a model parameter
+# 1.1
+data <- read.csv2("mortality_rate.csv",sep=";")
+
+data<-cbind(data,LMR=log(data$Rate))
+n=dim(data)[1]
+set.seed(123456)
+id=sample(1:n,floor(n*0.5))
+train=data[id,]
+test=data[-id,]
+```
 
 
 ### 2.
 
-### 3.
+We write our own function \texttt{myMSE()} that for any given parameters $\lambda$ and list \texttt{pars} containing vectors \texttt{X}, \texttt{Y}, \texttt{Xtest}, \texttt{Ytest} fits a LOESS model with response $Y$ and predictor $X$ using \texttt{loess()} function with penalty $\lambda$ and then predicts the model for \texttt{Xtest}.
 
-### 4.
+The function computes and returns the predictive MSE, which is defined as:
 
-### 5.
+$\frac{1}{length(test)} \sum\limits_{i} \big{(}Ytest[i]-fYpred(X[i])\big{)}^2$
 
-### 6.
+where $fYpred(X[i])$ is the predicted value of \texttt{Y} if \texttt{X} is \texttt{X[i]}.
 
-
+For function code see Appendix.
 
 ```{r}
 
+# 1.2
+myMSE <- function(lambda, pars, iterCounter = FALSE) {
+  X <- pars$X
+  Y <- pars$Y
+  Xtest <- pars$Xtest
+  Ytest <- pars$Ytest
+  
+  model <- loess(formula = Y~X, enp.target = lambda)
+  
+  Xtest_pred <- predict(model, newdata = Xtest)
+  
+  MSE <- sum((Ytest - Xtest_pred)^2) / length(Ytest)
+  
+  ####### THE FOLLOWING CODE REGARDING THE ITERATION COUNTER WAS WRITTEN BY 
+  #Arian Barakat AND COPIED FROM THE FILE FunctionCounter_Using_Environments_in_R.pdf #######
+  
+  # If we want a iteration counter
+  if(iterCounter){
+    if(!exists("iterForMyMSE")){
+      # Control if the variable exists in the global environemnt,
+      # if not, create a variable and set the value to 1. This
+      # would be the case for the first iteration
+      # We will call the variable 'iterForMyMSE'
+      assign("iterForMyMSE",
+             value = 1,
+             globalenv())
+    } else {
+      # This part is for the 2nd and the subsequent iterations.
+      # Starting of with obtaining the current iteration number
+      # and then overwrite the current value by the incremental
+      # increase of the current value
+      currentNr <- get("iterForMyMSE")
+      assign("iterForMyMSE",
+             value = currentNr + 1,
+             globalenv())
+    }
+  }
+  return(MSE)
+}
 ```
+
+
+### 3.
+
+Now we use our function \texttt{myMSE()} and the training and test sets defined in Question 1.1. with response LMR and predictor Day to estimate the predictive MSE values. The penalty values are chosen as $\lambda=0.1,0.2,...,40$.
+
+```{r}
+
+# 1.3
+pars <- list(X=as.matrix(train$Day), Y = as.matrix(train$LMR), 
+             Xtest = as.matrix(test$Day), Ytest = as.matrix(test$LMR))
+lambda <- seq(from = 0.1, to = 40, by = 0.1)
+
+MSE <- sapply(lambda, myMSE, pars)
+
+```
+
+### 4.
+
+```{r, fig.cap="\\label{fig:MSE} MSE values as a function of lambda", out.width = "80%",fig.pos='h'}
+
+# 1.4
+df_plot <- data.frame(lambda, MSE)
+ggplot(df_plot, aes(x = lambda, y = MSE)) +
+  geom_point(col = "darkblue") + 
+  xlab(expression(lambda)) + 
+  geom_vline(xintercept = 11.7)  # optimal lambda
+
+#min(MSE) #optimal MSE value = 0.131047
+```
+
+Looking at Figure \ref{fig:MSE}, and running an R command we can observe that 11.7 is the optimal value for $\lambda$. At this point the MSE is 0.131047.
+
+Since the step size in $\lambda$ was 0.1 and the starting point 0.1, the optimal value of 11.7 means that 117 evaluations of \texttt{myMSE()} were required to find it.
+
+### 5.
+
+In this task we use the \texttt{optimize()} function to find the optimal $\lambda$, with range [0.1,40] and accuracy 0.01.
+
+```{r}
+
+# 1.5
+#remove iteration variable if already exists
+if (exists("iterForMyMSE")) {
+  rm("iterForMyMSE")
+}
+
+MSE_min <- optimize(myMSE, interval = c(0.1, 40), tol = 0.01, pars = pars, iterCounter = TRUE)
+#iterForMyMSE #18 iterations
+#MSE_min$minimum #lambda = 10.69361
+#MSE_min$objective #MSE = 0.1321441
+```
+
+The result for the minimum value is 0.1321441 and the function achieves this at $\lambda=10.69361$. Therefore, we conclude that the optimizing function didn't find the optimal solution precisely, but it was very close to it. The \texttt{optimize()} called our \texttt{myMSE()} 18 times, this many evaluations were required to reach the solution. This, compared to the 117 evaluations from step 4 means that \texttt{optimize()} optimized much more efficiently, although the result is not exactly accurate.
+
+### 6.
+
+In the last task we use the \texttt{optim()} function and BFGS method with starting point $\lambda=35$ to find the optimal $\lambda$.
+
+```{r}
+
+# 1.6
+MSE_min2 <- optim(method = "BFGS", par = 35, fn = myMSE, pars = pars)
+#MSE_min2$counts[1] #1 function call to myMSE()
+#################################################################################
+```
+
+This time only 1 \texttt{myMSE()} function evaluation was required, because \texttt{optim()} returns the value obtained at the starting point. This is because the MSE function is flat around that point (see Figure \ref{fig:MSE}), which means that the gradient is 0, therefore no optimization is possible with this algorithm. Also, the starting point of 35 is too high, but if we set it to a lower value, where the MSE function is not flat, the \texttt{optim()} function finds a better optimum.
+
+The \texttt{optimize()} function in step 5 looked for the optimal $\lambda$ on the interval [0.1,40], which meant that optimizing was possible, but in this step, the starting point is too high, that is why we obtained such different results. 
 
 # Question 2: Maximum likelihood
 
@@ -48,7 +174,10 @@ First, we import the file to R, and then add a variable called \texttt{LMR} to t
 
 In this task we will use the file \texttt{data.RData} consists of a sample coming from normal distribution with parameters $\mu$ and $\sigma$. First we load the data set into R. 
 
-```{r, echo=FALSE,include=FALSE}
+```{r, echo=FALSE}
+
+
+# Question 2: Maximizing likelihood
 # 2.1
 # Load the data
 # Sample from normal distribution with parameters \mu and \sigma
@@ -79,7 +208,7 @@ l(\theta; \boldsymbol{x}) = \text{log} \ L (\theta; \boldsymbol{x})
 = -\frac{n}{2}\log(2\pi\sigma^2) -\frac{1}{2\sigma^2}\sum_{i=1}^{n} (x_i - \mu)^2.
 $$
 
-The maximum likelihood estimators (MLEs) $\hat{\mu}_{ML}$ and $\hat{\sigma}^2_{ML}$ of $\mu$ and $\sigma^2$ are obtained by maximizing the likelihood function. This is done by differentiating the log-likelihood functions and put them to zero. In more detail, we calculate the score functions $S(\theta; \boldsymbol{x})$ w.r.t. $\mu$ and $\sigma$ seperately, and let them equal zero and solve for each parameter:
+The maximum likelihood estimators (MLEs) $\hat{\mu}_{ML}$ and $\hat{\sigma}^2_{ML}$ of $\mu$ and $\sigma^2$ are obtained by maximizing the likelihood function. This is done by differentiating the log-likelihood functions and setting them to zero. In more detail, we calculate the score functions $S(\theta; \boldsymbol{x})$ w.r.t. $\mu$ and $\sigma$ seperately, and let them equal zero and solve for each parameter:
 
 $$
 S(\mu)= \frac{\partial}{\partial\mu}\ l(\theta;\boldsymbol{x}) = -\frac{n(\overline{x}-\mu)}{\sigma^2}=0,
