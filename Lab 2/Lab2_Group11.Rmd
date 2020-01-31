@@ -42,13 +42,21 @@ First, we import the file to R, and then add a variable called \texttt{LMR} to t
 
 ```
 
-
-# Question 2: Maximizing likelihood
-
-(Started to write question 2.1 - 2.4 / Sofie) 
+# Question 2: Maximum likelihood
 
 ### 1. 
+
 In this task we will use the file \texttt{data.RData} consists of a sample coming from normal distribution with parameters $\mu$ and $\sigma$. First we load the data set into R. 
+
+```{r, echo=FALSE,include=FALSE}
+# 2.1
+# Load the data
+# Sample from normal distribution with parameters \mu and \sigma
+load("data.Rdata")
+x <- data
+
+```
+
 
 ### 2. 
 
@@ -85,7 +93,6 @@ $$
 
 
 
-
 and $\hat{\sigma}^2_{ML} = \frac{1}{n}\sum_{i=1}^n (x_i- \mu)^2$.
 
 
@@ -93,12 +100,106 @@ Then we use the derived formulas in order to obtain the desired parameter estima
 
 
 
+```{r, echo=FALSE,include=FALSE}
+# 2.2
+# Derived formulas for the MLE 
+mu_ml <- function(x){
+  mean(x)
+}
+
+sigma_ml <- function(x){
+  term <- (x - mean(x))^2
+  sigma <- sum(term)/length(x)
+  return(sqrt(sigma))
+}
+
+# Value of MLE
+mu <- mu_ml(x)
+sigma <- sigma_ml(x)
+
+```
+
+
+
 ### 3.
 
-The function \texttt{optim()} minimizes the function by default in R. Thus we will optimize the minus log-likelihood function in order to find the maximum of the function. In Question 2.4 we performed two types of algorithms, Conjugate Gradient and BFGS, both with gradient specified and without, to maximize the log-likelihood function. It is a better idea to maximize the log-likelihood than maximize the likelihood. This is due to the large values that occurs in the likelihood, so it is preferable to take the logarithm which gives us a better scale to work with. 
+The function \texttt{optim()} minimizes the function by default in R. Thus we will optimize the minus log-likelihood function in order to find the maximum of the function. We will perform two types of algorithms, Conjugate Gradient and BFGS, both with gradient specified and without, to optimize the minus log-likelihood function. It is a better idea to maximize the log-likelihood than maximize the likelihood. This is due to the large values that occurs in the likelihood, which are numerically unstable, so it is preferable to take the logarithm which gives us a better scale to work with. Also, differentiating the log-likelihood function is more computationally convenient, since the product is replaced by a sum (see Question 2.2). 
 
 
-### 4. 
+```{r, echo=FALSE,include=FALSE}
+# 2.3
+# Minus log–likelihood function
+minus_logL <- function(x, par){
+  mu <- par[1]
+  sigma <- par[2]
+  (length(x)/2)*log(2*pi*sigma^2) + 1/(2*sigma^2) * sum((x - mu)^2)
+} 
+
+# Gradient (also minus)
+gradient <- function(x, par){
+  mu <- par[1]
+  sigma <- par[2]
+  -c((1/sigma)^2 * sum(x - mu),
+     -(length(x)/sigma) + (1/sigma)^3 * sum((x - mu)^2))
+}
+
+# Optimize with initial parameters mu = 0, sigma = 1.
+# Set seed
+set.seed(123456)
+
+#--------------------------------------------------------------------
+# Conjugate Gradient method
+# Start time
+start.time <- Sys.time()
+
+# With a finite-difference approximation
+optim(par = c(0, 1), fn = minus_logL, gr = NULL, method = "CG", x = x)
+
+# End time
+end.time <- Sys.time()
+time.taken <- end.time - start.time 
+
+#--------------------------------------------------------------------
+# Conjugate Gradient method
+# Start time
+start.time <- Sys.time()
+
+# With a specified gradient
+optim(par = c(0, 1), fn = minus_logL, gr = gradient, method = "CG", x = x)
+
+# End time
+end.time <- Sys.time()
+time.taken <- end.time - start.time 
+
+#--------------------------------------------------------------------
+# BFGS - With a finite-difference approximation
+# Start time
+start.time <- Sys.time()
+
+# With a finite-difference approximation
+optim(par = c(0, 1), fn = minus_logL, gr = NULL, method = "BFGS", x = x)
+
+# End time
+end.time <- Sys.time()
+time.taken <- end.time - start.time 
+
+#--------------------------------------------------------------------
+# BFGS - With a specified gradient
+# Start time
+start.time <- Sys.time()
+
+# Optimize
+optim(par = c(0, 1), fn = minus_logL, gr = gradient, method = "BFGS", x = x)
+
+# End time
+end.time <- Sys.time()
+time.taken <- end.time - start.time 
+
+
+```
+
+
+### 4.
 
 The results of the optimization are presented in Table \ref{tab:result}. 
 
@@ -119,15 +220,16 @@ BFGS & Yes & 1.275528 & 2.005977 & 39 & 15 & 0.009279966 sec \\
 \end{table}
 
 
-From the results in Table \ref{tab:result}, we can see that the algorithm converged in all cases, where the obtained optimal values correspond to the estimated parameters in Question 2.2. 
+From the results in Table \ref{tab:result}, we can see that the algorithm converged in all cases, where all the obtained optimal values are the same and correspond to the estimated parameters in Question 2.2. One explanation of why all algorithms find the optimum is because the likelihood function is convex for the normal distribution. Therefore, it is guaranteed that these algorithms will find the optimal values of the parameters.
 
+Without specifying the gradient, the Conjugate Gradient method required $297$ function and $45$ gradient evaluations for the algorithm to converge, while the BFGS only required $37$ function and $15$ gradient evaluations. Also, the time until convergence was measured by using \texttt{Sys.time()}, and we can notice that the BFGS is somewhat faster than Conjugagte Gradient. Even though the difference in time between the algorithms is small, it may have a bigger impact when having a larger data set. All this support the recommendation of choosing the algorithm BFGS in this situation. When we specified the gradient, the number of evaluations was remarkably reduced and time decreased for the Conjugate Gradient algorithm. In this case, it could be reasonable to specify the gradient and not use a finite-difference approximation. On the other hand, there are no big difference when specify the gradient for the BFGS algorithm. 
 
-Without specifying the gradient, the Conjugate Gradient method required $297$ function and $45$ gradient evaluations for the algorithm to converge, while the BFGS only required $37$ function and $15$ gradient evaluations. Also, the time until convergence was measured by using \texttt{Sys.time()}, and we can notice that the BFGS is somewhat faster than Conjugagte Gradient. Even though the difference in time between the algorithms is small, it may have a bigger impact when having a larger data set. All this support the recommendation of choosing the algorithm BFGS in this situation. 
-
-When we specified the gradient, the number of evaluations was remarkably reduced and time decreased for the Conjugate Gradient algorithm. In this case, it could be reasonable to specify the gradient and not use a finite-difference approximation. On the other hand, there are no big difference when specify the gradient for the BFGS algorithm. 
-
-In summary, the setting that we recommend is to use...
+In summary, the gradient adds more information to the optimization and therefore we recommend to specify the gradient if possible. If the gradient is not specified when optimizing, then the BFGS is a better choice in this case. 
 
 
 
 # Appendix
+
+```{r ref.label=knitr::all_labels(),echo=TRUE,eval=FALSE}
+
+```
