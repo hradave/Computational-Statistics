@@ -13,13 +13,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Question 1: Optimizing a model parameter
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 # R version
 RNGversion('3.5.1')
 ```
 
+The aim of the first question is to perform optimization by using a data set, \texttt{mortality rate.csv}, consisting of information about the mortality rates of fruit flies during an observed period. 
 
-### 1.
+### 1. 
+
+First, we import the file to R, and then add a variable called \texttt{LMR} to the data set. The new defined variable \texttt{LMR} is the natural logarithm of \texttt{Rate}. Thereafter, we split the data into a training set and a test sets, respectively. The splitting is done using the code which is already given (see Appendix). 
+
+
 
 ### 2.
 
