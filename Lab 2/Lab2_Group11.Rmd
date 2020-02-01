@@ -47,13 +47,13 @@ test=data[-id,]
 
 We write our own function \texttt{myMSE()} that for any given parameters $\lambda$ and list \texttt{pars} containing vectors \texttt{X}, \texttt{Y}, \texttt{Xtest}, \texttt{Ytest} fits a LOESS model with response $Y$ and predictor $X$ using \texttt{loess()} function with penalty $\lambda$ and then predicts the model for \texttt{Xtest}.
 
-The function computes and returns the predictive MSE, which is defined as:
+The function computes and returns the predictive MSE, which is defined as
 
-$\frac{1}{length(test)} \sum\limits_{i} \big{(}Ytest[i]-fYpred(X[i])\big{)}^2$
+$$\frac{1}{length(test)} \sum\limits_{i} \big{(}Ytest[i]-fYpred(X[i])\big{)}^2,$$
 
 where $fYpred(X[i])$ is the predicted value of \texttt{Y} if \texttt{X} is \texttt{X[i]}.
 
-For function code see Appendix.
+The function code is defined in the Appendix.
 
 ```{r}
 
@@ -116,7 +116,7 @@ MSE <- sapply(lambda, myMSE, pars)
 
 ### 4.
 
-```{r, fig.cap="\\label{fig:MSE} MSE values as a function of lambda", out.width = "80%",fig.pos='h'}
+```{r, fig.cap="\\label{fig:MSE} MSE values as a function of lambda", out.width = "80%", fig.pos='h'}
 
 # 1.4
 df_plot <- data.frame(lambda, MSE)
