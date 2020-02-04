@@ -268,7 +268,7 @@ minus_logL <- function(x, par){
 gradient <- function(x, par){
   mu <- par[1]
   sigma <- par[2]
-  -c((1/sigma)^2 * sum(x - mu),
+  -c((1/sigma)^2 * sum(x - mu), # (length(x)/sigma)^2 * sum(x - mu)
      -(length(x)/sigma) + (1/sigma)^3 * sum((x - mu)^2))
 }
 
