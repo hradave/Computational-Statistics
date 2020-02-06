@@ -33,3 +33,51 @@ data <- read.csv2("population.csv",sep=";")
 data$Prob <- data$Population / sum(data$Population)
 ```
 
+### 2. 
+```{r}
+
+```
+
+
+# Question 2: Different distributions
+
+### 1.
+
+The double exponential (Laplace) distribution is given by formula:
+
+$$DE(\mu,\alpha) = \frac{\alpha}{2} exp(-\alpha|x-\mu|)$$
+
+Let, 
+$$X \stackrel{}\sim DE(0,1)$$
+
+Then,
+$${f_x}(x) = \frac{1}{2} exp(-|x|) $$
+
+Also,
+$${F_x}(x) = \int_{-\infty}^{x} {f_x}(s)ds = \frac{1}{2} exp(-|s|)ds$$
+Therefore,
+
+$$
+{F_x}(x) = \begin{cases} \frac{exp(x)}{2} ,x < 0 \\ 1 - \frac{exp(-x)}{2}, x \geq 0 \end{cases}
+$$
+
+!!!QUESTION: Here I only use the function for x>0. Should we do it for bigger and smaller than 0????? !!!!
+
+Using the CDF method we look for $F^{-1}_{x}$, which is:
+$$F^{-1}_{x}(y) = -ln(2-2y) $$
+
+
+Hence, if $U\stackrel{}\sim U(0,1)$, then
+$$-ln(2-2U) = X \stackrel{}\sim DE(0,1)$$
+
+Using this formula bla bla...
+```{r}
+uniform <- runif(1000, min = 0, max = 1) #Not allowed, use from ex.1
+DE_numbers <- -log(2 - 2 * uniform)
+hist(DE_numbers, breaks = 30)
+```
+
+The histogram looks like an exponential??? 
+
+### 2.
+
