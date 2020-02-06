@@ -1,0 +1,35 @@
+---
+title: "732A90: Computational Statistics"
+subtitle: "Computer lab3 - Group11"
+author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document:
+      fig_caption: yes
+header-includes:
+- \usepackage{float}
+---
+
+```{r setup, include=FALSE, eval=TRUE, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Question 1: Cluster sampling
+
+```{r, echo=FALSE, warning=FALSE}
+# R version
+RNGversion('3.5.1')
+#libraries
+library(ggplot2)
+```
+
+
+### 1.
+
+```{r}
+# Question 1: Cluster sampling
+# 1.1
+data <- read.csv2("population.csv",sep=";")
+data$Prob <- data$Population / sum(data$Population)
+```
+
