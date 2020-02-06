@@ -14,7 +14,7 @@ data <- read.csv2("population.csv", stringsAsFactors = FALSE)
 set.seed(1234567890)
 
 sampler <- function(data) {
-  rand <- round(runif(1,min=1, max=sum(data$Population)),1)
+  rand <- round(runif(1,min=1, max=sum(data$Population)),0)
   
   for (i in 1:dim(data)[1]) {
     rand <- rand - data[i,2]
@@ -47,4 +47,27 @@ mean(data$Population) #32209.25
 #5
 hist(data$Population, breaks = 50)
 hist(sample$Population, breaks = 50)
-#the histograms look the same
+#the histograms look similar, but more populated cities appear more often.
+
+
+
+
+################################## checking the algorithm with no weights ###########################
+set.seed(1234567890)
+
+sampler2 <- function(data) {
+  rand <- round(runif(1,min=1, max=dim(data)[1]),0)
+  return(data[rand,1])
+}
+selected_cities2 <- vector(length = 20, mode = "character")
+cities2 <- data
+
+set.seed(1234567890)
+for (j in 1:20) {
+  selected_cities2[j] <- sampler2(cities2)
+  cities2 <- cities2[-which(cities2$Municipality==selected_cities2[j]),]
+}
+
+sample2 <- data[which(data$Municipality %in% selected_cities2),]
+mean(sample2$Population) #41792.15
+hist(sample2$Population, breaks = 50, xlim=c(0,8e+05))
