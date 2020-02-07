@@ -41,11 +41,15 @@ data$Prob <- data$Population / sum(data$Population)
 
 # Question 2: Different distributions
 
+In this question we are given the double exponential (Laplace) distribution with the location parameter $\mu$ and the scale parameter $\alpha$, where the formula is given by
+
+$$DE(\mu,\alpha) = \frac{\alpha}{2} \text{exp}(-\alpha|x-\mu|).$$
+
+
 ### 1.
 
-The double exponential (Laplace) distribution is given by formula:
+The aim of this task is to generate random numbers from a double exponential distribution with $\mu=0$ and $\alpha=1$, that is $DE(0, 1)$, from a uniform distribution $\text{Unif}(0, 1)$ by using the inverse CDF method. For this, we will generate 10000 random numbers, and a plot histogram of the results. 
 
-$$DE(\mu,\alpha) = \frac{\alpha}{2} exp(-\alpha|x-\mu|)$$
 
 Let, 
 $$X \stackrel{}\sim DE(0,1)$$
