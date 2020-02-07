@@ -42,6 +42,7 @@ sample <- data[which(data$Municipality %in% selected_cities),]
 mean(sample$Population) #94273.3
 mean(data$Population) #32209.25
 #The size of the selected cities are a bit different, but they are of the same magnitude.
+#plot about the selected cities.
 
 
 #5
@@ -50,7 +51,17 @@ hist(sample$Population, breaks = 50)
 #the histograms look similar, but more populated cities appear more often.
 
 
+#extra
+joined <- merge(data,sample, by = "Municipality", all = TRUE)
+joined$Population.y[is.na(joined$Population.y)]<-0
+joined$Population.y[is.na(joined$Population.y)]<-1
 
+
+plot(joined[order(joined$Population.x),]$Population.x/1000, pch = 16, ylab = "Population (in thousands)", xlab = "Cities")
+points(joined[order(joined$Population.x),]$Population.y/1000, col="red", pch = 16)
+legend(x="topleft", legend = c("Selected cities", "Not selected cities"), col = c("red", "black"), pch = 16)
+#out of the top 20 we chose 5
+#out of the bottom 20 we chose 0
 
 ################################## checking the algorithm with no weights ###########################
 set.seed(1234567890)
@@ -70,4 +81,4 @@ for (j in 1:20) {
 
 sample2 <- data[which(data$Municipality %in% selected_cities2),]
 mean(sample2$Population) #41792.15
-hist(sample2$Population, breaks = 50, xlim=c(0,8e+05))
+hist(sample2$Population, breaks = 10, xlim=c(0,8e+05))

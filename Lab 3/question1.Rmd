@@ -1,0 +1,131 @@
+---
+title: "Question 1"
+author: "David Hrabovszki"
+date: "2/7/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Question 1: Cluster sampling
+
+An opinion poll is assumed to be performed in several locations of Sweden by sending interviewers to this location. But since it is unreasonable from the financial point of view to visit each city, we use random sampling without replacement to select 20 cities, where the the probability of a city getting selected is proportional to its number of inhabitants. 
+
+### 1.
+
+The data containing the cities and populations is found in population.csv, which we import into R.
+
+```{r warning=FALSE}
+################################## Question 1: Cluster sampling ##################################
+# R version
+RNGversion('3.5.1')
+#1.1
+data <- read.csv2("population.csv", stringsAsFactors = FALSE)
+
+```
+
+### 2.
+
+We create a function \texttt{sampler()} that selects 1 city from the whole list using a uniform random number generator. This function essentially performs weighted random sampling on our data, where the weight corresponding to each city is its population.
+
+Our implementation is based on the pseudo-code written by Peter Kelly [^1]. The function first generates an integer random number from the uniform distribution between the range [1,Total Population]. Then, it iterates through all the cities and updates the random number by subtracting the population of the current city from it. After that, but in the same iteration step, it compares this value to 0. If it is smaller than or equal to 0, then the function returns the current city and the loop breaks. If it is larger, then it continues into the next iteration step and updates the value with the subtraction of the next city's population from  it until it finds a city, where this value is <= 0.
+
+Since the generated random number gets lower and lower with every iteration, it will eventually return a result in every case. More populated cities get selected more often, because the larger the weight, the more likely to be larger than a randomly generated number in the range [1,Total Population], which means that their difference is <= 0.
+
+[^1]: https://medium.com/@peterkellyonline/weighted-random-selection-3ff222917eb6
+
+```{r}
+#1.2
+# Seed
+set.seed(1234567890)
+
+sampler <- function(data) {
+  rand <- round(runif(1,min=1, max=sum(data$Population)),0)
+  for (i in 1:dim(data)[1]) {
+    rand <- rand - data[i,2]
+    if (rand <= 0) {
+      return(data[i,1])
+    }
+  }
+}
+
+```
+
+
+
+### 3.
+
+In this step, we use our \texttt{sampler()} function to randomly select 20 cities from the list without replacement. The function ensures that more populated cities get selected with a higher probability.
+
+The method is as follows:
+
+(a) Apply \texttt{sampler()} to the list of all cities and select one city
+
+(b) Remove this city from the list
+
+(c) Apply \texttt{sampler()} again to the updated list of the cities
+
+(d) Remove this city from the list
+
+(e) ... and so on until we get exactly 20 cities.
+
+
+```{r}
+#1.3
+selected_cities <- vector(length = 20, mode = "character")
+cities <- data
+
+set.seed(1234567890)
+for (j in 1:20) {
+  selected_cities[j] <- sampler(cities)
+  cities <- cities[-which(cities$Municipality==selected_cities[j]),]
+}
+
+```
+
+### 4.
+
+Using \texttt{sampler()} function and the sampling method described in step 3, we obtain the following list of selected cities:
+
+```{r}
+#1.4
+#the selected cities:
+sample <- data[which(data$Municipality %in% selected_cities),]
+knitr::kable(sample, caption = 'Selected cities')
+
+```
+
+```{r}
+#mean(sample$Population) #94273.3
+#mean(data$Population) #32209.25
+
+```
+
+The average population of the 20 selected cities is 94273, while the average of all cities is 32209. This indicates that our random selection contains more populated cities with a higher probability.
+
+```{r, fig.cap="\\label{fig:cities} Weighted random selection of cities in Sweden", out.width = "80%", fig.pos='h', fig.align='center'}
+#extra
+joined <- merge(data,sample, by = "Municipality", all = TRUE)
+
+plot(joined[order(joined$Population.x),]$Population.x/1000, pch = 16, ylab = "Population (in thousands)", xlab = "Cities")
+points(joined[order(joined$Population.x),]$Population.y/1000, col="red", pch = 16)
+legend(x="topleft", legend = c("Selected cities", "Not selected cities"), col = c("red", "black"), pch = 16)
+```
+
+Figure \ref{fig:cities} visualizes the cities as points in ascending order by their populations. The red points represent cities that were selected by our sampling method, the black ones represent the ones that were not. We can observe that more populated cities make up the majority of our selection, as they were more likely to be selected. In fact, out of the 20 most populated cities, we picked 5, while we chose 0 out of the 20 least populated ones.
+
+### 5.
+
+Figure \ref{fig:hist_original} shows the histogram of the size of all Swedish cities, while figure \ref{fig:hist_sample} is the histogram of the size of the 20 selected cities. We can observe that both histograms look similar, this is due to the randomness of the sampling method. We can also see that cities with large population are very rare in the first case, but much more frequent in the second one. This is because our \texttt{sample()} function selects cities with large populations with a higher probability. Cities with smaller populations are still in majority, since there were a lot more of them originally, but their proportion is much smaller than before sampling.
+
+
+```{r, fig.cap="\\label{fig:hist_original} Histogram of the sizes of cities in Sweden", out.width = "80%", fig.pos='h', fig.align='center'}
+hist(data$Population/1000, breaks = 50, ylab = "Frequency", xlab = "Population (in thousands)", main = "")
+```
+
+```{r, fig.cap="\\label{fig:hist_sample} Histogram of the sizes of the selected cities", out.width = "80%", fig.pos='h', fig.align='center'}
+hist(sample$Population/1000, breaks = 50, ylab = "Frequency", xlab = "Population (in thousands)", main = "")
+```
+
