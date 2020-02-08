@@ -20,7 +20,7 @@ An opinion poll is assumed to be performed in several locations of Sweden by sen
 
 ### 1.
 
-The data containing the cities and populations is found in population.csv, which we import into R.
+The data containing the cities and populations is found in \texttt{population.csv}, which we import into R.
 
 ```{r warning=FALSE}
 ################################## Question 1: Cluster sampling ##################################
@@ -92,7 +92,7 @@ for (j in 1:20) {
 
 ### 4.
 
-Using \texttt{sampler()} function and the sampling method described in step 3, we obtain the following list of selected cities:
+Using \texttt{sampler()} function and the sampling method described in step 3, we obtain a list (Table 1) of selected cities.
 
 ```{r}
 #1.4
@@ -114,9 +114,12 @@ The average population of the 20 selected cities is 94273, while the average of 
 #extra
 joined <- merge(data,sample, by = "Municipality", all = TRUE)
 
-plot(joined[order(joined$Population.x),]$Population.x/1000, pch = 16, ylab = "Population (in thousands)", xlab = "Cities")
-points(joined[order(joined$Population.x),]$Population.y/1000, col="red", pch = 16)
-legend(x="topleft", legend = c("Selected cities", "Not selected cities"), col = c("red", "black"), pch = 16)
+plot(joined[order(joined$Population.x),]$Population.x/1000, 
+     pch = 16, ylab = "Population (in thousands)", xlab = "Cities")
+points(joined[order(joined$Population.x),]$Population.y/1000, 
+       col="red", pch = 16)
+legend(x="topleft", legend = c("Selected cities", "Not selected cities"), 
+       col = c("red", "black"), pch = 16)
 ```
 
 Figure \ref{fig:cities} visualizes the cities as points in ascending order by their populations. The red points represent cities that were selected by our sampling method, the black ones represent the ones that were not. We can observe that more populated cities make up the majority of our selection, as they were more likely to be selected. In fact, out of the 20 most populated cities, we picked 5, while we chose 0 out of the 20 least populated ones.
@@ -127,11 +130,13 @@ Figure \ref{fig:hist_original} shows the histogram of the size of all Swedish ci
 
 
 ```{r, fig.cap="\\label{fig:hist_original} Histogram of the sizes of cities in Sweden", out.width = "80%", fig.pos='h', fig.align='center'}
-hist(data$Population/1000, breaks = 50, ylab = "Frequency", xlab = "Population (in thousands)", main = "")
+hist(data$Population/1000, breaks = 50, 
+     ylab = "Frequency", xlab = "Population (in thousands)", main = "")
 ```
 
 ```{r, fig.cap="\\label{fig:hist_sample} Histogram of the sizes of the selected cities", out.width = "80%", fig.pos='h', fig.align='center'}
-hist(sample$Population/1000, breaks = 50, ylab = "Frequency", xlab = "Population (in thousands)", main = "")
+hist(sample$Population/1000, breaks = 50, 
+     ylab = "Frequency", xlab = "Population (in thousands)", main = "")
 ```
 
 
@@ -146,58 +151,58 @@ $$DE(\mu,\alpha) = \frac{\alpha}{2} \text{exp}(-\alpha|x-\mu|).$$
 
 ### 1.
 
-The idea behind the inverse cumulative distribution function (CDF) method is that if we can generate $U \stackrel{}\sim U(0,1)$, then we can generate $X \stackrel{}\sim F_{x}$ as $X = F^{-1}_{x}(U)$ provided we can calculate $F^{-1}_{x}(U)$.
+The idea behind the inverse cumulative distribution function (CDF) method is that if we can generate $U \stackrel{}\sim \text{Unif}(0,1)$, then we can generate $X \stackrel{}\sim F_{X}$ as $X = F^{-1}_{X}(U)$ provided we can calculate $F^{-1}_{X}(U)$.
 
-The aim of this task is to generate random numbers from a double exponential or Laplace distribution with the location parameter $\mu=0$ and the scale paramenter $\alpha=1$, that is $DE(0, 1)$, from a uniform distribution $\text{Unif}(0, 1)$ by using the inverse CDF method. For this, we will generate 10000 random numbers, and plot a histogram of the results. 
+The aim of this task is to generate random numbers from a double exponential or Laplace distribution with the location parameter $\mu=0$ and the scale paramenter $\alpha=1$, that is $DE(0, 1)$, from a uniform distribution $\text{Unif}(0, 1)$ by using the inverse CDF method. For this, we want to generate 10000 random numbers, i.e. $X \stackrel{}\sim DE(0,1)$, and plot a histogram of the results. 
 
-We want to generate, 
-$$X \stackrel{}\sim DE(0,1)$$
 
-The standard double exponential $DE(0,1)$ has a probability distribution function (PDF) such as,
-$${f_x}(x) = \frac{1}{2} exp(-|x|) $$
+The probability density function (PDF) of a standard double exponential $DE(0,1)$ is given by
+$${f_X}(x) = \frac{1}{2} \text{exp}(-|x|).$$
 
 
 Implying that the CDF is,
-$${F_x}(x) = \int_{-\infty}^{x} {f_x}(s)ds = \int_{-\infty}^{x}\frac{1}{2} exp(-|s|)ds$$
+$${F_X}(x) = \int_{-\infty}^{x} {f_X}(s) \ ds = \int_{-\infty}^{x}\frac{1}{2} \text{exp}(-|s|)\ ds.$$
 
-As $\textbf{x}$ yields both positive and negative values, we compute the following integrals:
+Since an absolute value is included in the PDF, the value of $x$ can be positive as well as negative. Thus we divide this problem into two cases $x < 0$ and $x \geq 0$, and we compute the following integrals:
 
-For $\textbf{x < 0}$,
+For $x < 0$, the integral is computed as
 
-$${F_x}(x) = \int_{-\infty}^{0}\frac{1}{2} exp(-|s|)ds = \frac{exp(x)}{2}$$
+$${F_X}(x) = \int_{-\infty}^{x}\frac{1}{2} \text{exp} (s) \ ds = \frac{\text{exp}(x)}{2}.$$
 
-For $\textbf{x} \geq 0$,
+For $x \geq 0$,
 
-$${F_x}(x) = \int_{-\infty}^{0}\frac{1}{2} exp(-|s|)ds + \int_{0}^{x}\frac{1}{2} exp(-|s|)ds = 1 - \frac{exp(-x)}{2}$$
+$${F_X}(x) = \int_{-\infty}^{0}\frac{1}{2} \text{exp}(s) \ ds + \int_{0}^{x}\frac{1}{2} \text{exp}(-s) \ ds = 1 - \frac{\text{exp}(-x)}{2}.$$
 
 Therefore,
 
 $$
-{F_x}(x) = \begin{cases} \frac{exp(x)}{2} ,x < 0 \\ 1 - \frac{exp(-x)}{2}, x \geq 0 \end{cases}
+{F_X}(x) = \begin{cases} \frac{ \text{exp}(x)}{2}  \quad \text{if } x < 0, \\ 1 - \frac{\text{exp}(-x)}{2} \quad \text{if } x \geq 0. \end{cases}
 $$
 
-Using the CDF method we look for $F^{-1}_{x}$, following this steps:
+Now we can obtain $F^{-1}_{X}$ by taking the inverse of the CDF, by using the following steps:
 
-For $\textbf{x < 0}$,
-$$y=\frac{exp(x)}{2} \rightarrow exp(x)=2y \rightarrow x=log(2y) \rightarrow F^{-1}_{x} = log(2y) $$
+For $x< 0$,
+$$y=\frac{\text{exp}(x)}{2} \Longleftrightarrow \text{exp}(x)=2y \Longleftrightarrow x= \text{ln}(2y),$$
 
-For $\textbf{x} \geq 0$,
-$$y=1 - \frac{exp(-x)}{2} \rightarrow exp(-x)=2-2y \rightarrow x=-log(2-2y) \rightarrow F^{-1}_{x}(y) = -log(2-2y) $$
+and for $x \geq 0$,
+
+$$y=1 - \frac{\text{exp}(-x)}{2} \Longleftrightarrow \text{exp}(-x)=2-2y \Longleftrightarrow x=-\text{ln}(2-2y). $$
 
 
-Hence, if $U\stackrel{}\sim U(0,1)$, then:
+Hence, if $U\sim \text{Unif}(0,1)$, then for $x<0$, we have that $\text{ln}(2U)=X \sim DE(0,1)$, and for $x \geq 0$, we have $-\text{ln}(2-2U) = X\sim DE(0,1)$.
 
-$$ log(2U) = X \stackrel{}\sim DE(0,1) \quad for \enspace x<0\\ -ln(2-2U) = X \stackrel{}\sim DE(0,1) \quad for \enspace x\geq0$$
 
-Studying this results it is possible to see that values of $U<0.5$, yield negative values of $x$. Also,values of $U\geq0.5$ yield positive values of $x$. 
+Studying this results it is clear that, for negative values $x<0$, $\text{ln}(2u)<0 \Longleftrightarrow u<\frac{1}{2}$. Also, for $x\geq0$, $-\text{ln}(2-2u) \geq 0 \Longleftrightarrow u\geq \frac{1}{2}$.
 
-With all this information it is possible to code a generator for the double exponential distribution $DE(0,1)$ from $U(0,1)$ by using the CDF method. We create the function \texttt{my_DE} (see Appendix). 
+With all this information it is possible to code a generator for the double exponential distribution $DE(0,1)$ from $U(0,1)$ by using the inverse CDF method. We create the function \texttt{my\textunderscore DE} accoring to the approach as described (see Appendix). 
+
+
 
 ```{r}
 ############################## Question 2: Different distributions ###############################
 
 # 2.1 
-# Random numbers from DE(0,1) from Unif(0,1) generated by using the inverse cumulative function.
+# Random numbers from DE(0,1) from Unif(0,1) generated by using the inverse cdf method.
 # Divide the two cases into different statements. 
 my_DE <- function(n){
   x <- c()
@@ -211,11 +216,17 @@ my_DE <- function(n){
   }
   return(x)
 }
+
 ```
 
-From this point, using \texttt{my_DE} we can generate 10000 random numbers from this distribution and plot the histogram, figure \ref{fig:CDF1}.
 
-```{r, fig.cap="\\label{fig:CDF1} Histogram of DE(0,1) using my_DE function", out.width = "80%", fig.pos='h'}
+
+
+From this point, using \texttt{my\textunderscore DE} we can generate 10000 random numbers from this distribution and plot the histogram, figure \ref{fig:CDF1}.
+
+
+
+```{r, fig.cap="\\label{fig:CDF1} Histogram of 10000 generated random numbers from DE(0,1) using the inverse cdf method.", out.width = "80%", fig.pos = 'h'}
 # Generate 10000 random numbers from DE(0,1)
 x <- my_DE(10000)
 
@@ -223,7 +234,7 @@ x <- my_DE(10000)
 hist(x, breaks = 40, col = "cyan", main = "Histogram of DE(0,1)")
 ```
 
-Looking at figure \ref{fig:CDF1} we can see that it looks like a Laplace distribution centered around 0. Therefore the results obtained using the generator function \texttt{my_DE} look reasonable. 
+Looking at figure \ref{fig:CDF1} we can see that it looks like a Laplace distribution centered around 0. Therefore the results obtained using the generator function \texttt{my\textunderscore DE} look reasonable. 
 
 We can also use the function \texttt{rlaplace} from the package \texttt{rmutil} that generates random numbers from a standard laplace distribution and plot an histogram, figure \ref{fig:CDF2}, in order to compare to the previous plot.
 
@@ -231,8 +242,8 @@ We can also use the function \texttt{rlaplace} from the package \texttt{rmutil} 
 library(rmutil)
 ```
 
-```{r, fig.cap="\\label{fig:CDF2} Histogram of DE(0,1) using rlaplace function", out.width = "80%", fig.pos='h'}
-# The DE(0,1) using inv. cdf method corresponds to the histogram when directly sample from the laplace. 
+```{r, fig.cap="\\label{fig:CDF2} Histogram of 10000 generated random numbers from DE(0,1) using rlaplace function", out.width = "80%", fig.pos='h'}
+# Histogram of  DE(0,1) by directly sample from the laplace. 
 hist(rlaplace(10000), breaks = 40, col = "cyan", main = "Histogram of DE(0,1)", xlab = "x") 
 
 ```
@@ -241,33 +252,13 @@ As we can see both histograms look alike, confirming the previous statements and
 
 ### 2.
 
-Now we are going to apply the Acceptance/Rejection method by using the double exponential distribution obtained from Question 2.1, in order to generate standard normal variables. In other words, $DE(0,1)$ is the majorizing density $f_Y$ and $N(0,1)$ is the target density $f_X$. The implementation of the Acceptance/Rejection method is taken from the example in the course material provided in the lecture. From Figure X (refer to histogram in Question 2.1) we can observe that the shape of the distribution looks quite similar to a standard normal distribution since it is centered around zero and have a similar spread, thus the choice of the $DE(0,1)$ can be considered as reasonable. 
+Now we are going to apply the Acceptance/Rejection method by using the double exponential distribution obtained from Question 2.1, in order to generate standard normal variables. In other words, $DE(0,1)$ is the majorizing density $f_Y$ and $N(0,1)$ is the target density $f_X$. The implementation of the Acceptance/Rejection method is taken from the example in the course material provided in the lecture. From Figure \ref{fig:CDF1} we can observe that the shape of the distribution looks quite similar to a standard normal distribution since it is centered around zero and have a similar spread, thus the choice of the $DE(0,1)$ can be considered as reasonable. 
 
 
 The idea is to generate a random number from $DE(0,1)$, i.e. $Y \sim f_Y$ and a random number from $U \sim\text{Unif}(0,1)$. Then if $U\leq \frac{f_X(Y)}{cf_Y(Y)}$ holds, then we accept the generated number $Y$, otherwise it is rejected. The rejection is controlled by the majorizing constant $c$, and a value of $c$ closer to 1 will imply fewer rejections. This means that if $c=1$, then $f_Y$ and $f_X$ are the same density function. Thus we wish to pick a majorizing constant c, close to 1 such that it fulfills the requirement that $c\cdot f_Y (x) \geq f_X(x)$ for all $x$. We test a sequence of numbers of $c$ from $1$ to $5$, and obtained 1.32 as the smallest $c$ such that the requirement is still fulfilled for any $x$. 
 
-Thereafter we generate $2000$ standard normal random numbers with this setting. The result is presented in a histogram in Figure X. In the Acceptance/Rejection method, we compute the number of rejections $R$ with \texttt{num.reject} and we obtain $R=0.317$ for $c=1.32$. The number of rejections plus the single draw, when the random number is accepted, must equal the total number of draws. Since the total number of draws is Geometric distributed with mean $c$, the expected rejection rate $ER$ is given by $c-1= 1.32-1=0.32$. By computing the difference $ER-R = 0.003$ we can conclude that the expected rejection rate $ER$ and the average rejection rate $R$ are very close to each other. Also, the two histograms looks similar when comparing Figure X with Figure X for $2000$ random numbers. Hence we are satisfied with our implemented random generator. 
+Thereafter we generate $2000$ standard normal random numbers with this setting. The result is presented in a histogram in Figure \ref{fig:Normal1}. In the Acceptance/Rejection method, we compute the number of rejections $R$ with \texttt{num.reject} and we obtain $R=0.317$ for $c=1.32$. The number of rejections plus the single draw, when the random number is accepted, must equal the total number of draws. Since the total number of draws is Geometric distributed with mean $c$, the expected rejection rate $ER$ is given by $c-1= 1.32-1=0.32$. By computing the difference $ER-R = 0.003$ we can conclude that the expected rejection rate $ER$ and the average rejection rate $R$ are very close to each other. Then we generate $2000$ standard normal random numbers, but directly from the standard normal distribution by using \texttt{rnorm}. Also, the two histograms looks similar when comparing Figure \ref{fig:Normal1} with Figure \ref{fig:Normal2} for $2000$ random numbers. Hence we are satisfied with our implemented random generator. 
 
-
-```{r, echo=FALSE}
-
-
-# Random numbers from DE(0,1) from Unif(0,1) generated by using the inverse cumulative function.
-# Divide the two cases into different statements. 
-my_DE <- function(n){
-  x <- c()
-  for (i in 1:n){
-    u <- runif(1)
-    if(u < 0.5){
-      x[i] <- log(2*u)
-    }else{
-      x[i] <- -log(2*(1-u))
-    }
-  }
-  return(x)
-}
-
-```
 
 
 ```{r, echo=FALSE}
@@ -305,18 +296,19 @@ for (i in 1:n){
 
 ```
 
-```{r,echo=FALSE}
+```{r, fig.cap="\\label{fig:Normal1} Histogram of 2000 generated random numbers from N(0,1) using the Acceptance/Rejection method", out.width = "80%", fig.pos='h'}
 # Histogram of 2000 generated random numbers N(0,1)
 # by using the Acceptance/Rejection method
 # with majorizing density DE(0,1)
-hist(A[,1], breaks = 40)
+hist(A[,1], breaks = 40, col = "gray", xlab = "x", main = "Histogram of N(0,1)")
 
 ```
 
 
-```{r,echo=FALSE}
+
+```{r, fig.cap="\\label{fig:Normal1} Histogram of 2000 generated random numbers from N(0,1) by using rnorm().", out.width = "80%", fig.pos='h'}
 # Histogram of 2000 random N(0,1) numbers
-hist(rnorm(2000), breaks = 40)
+hist(rnorm(2000), breaks = 40, col = "grey", xlab = "x" , main ="Histogram of N(0,1)")
 
 ```
 
