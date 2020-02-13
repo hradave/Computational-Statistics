@@ -1,17 +1,19 @@
 ---
-title: "732A90: Computational Statistics"
-subtitle: "Computer lab3 - Group11"
+title: '732A90: Computational Statistics'
 author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
   pdf_document:
-      fig_caption: yes
-header-includes:
-- \usepackage{float}
+    fig_caption: yes
+    includes:
+      in_header: my_header.tex
+  html_document:
+    df_print: paged
+subtitle: Computer lab3 - Group11
 ---
 
 ```{r setup, include=FALSE, eval=TRUE, echo=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, fig.pos = 'H')
 ```
 
 # Question 1: Cluster sampling
@@ -110,7 +112,8 @@ knitr::kable(sample, caption = 'Selected cities')
 
 The average population of the 20 selected cities is 94273, while the average of all cities is 32209. This indicates that our random selection contains more populated cities with a higher probability.
 
-```{r, fig.cap="\\label{fig:cities} Weighted random selection of cities in Sweden", out.width = "80%", fig.pos='h', fig.align='center'}
+
+```{r, fig.cap="\\label{fig:cities} Weighted random selection of cities in Sweden", out.width = "80%", fig.pos='h', fig.align='center' }
 #extra
 joined <- merge(data,sample, by = "Municipality", all = TRUE)
 
@@ -122,6 +125,7 @@ legend(x="topleft", legend = c("Selected cities", "Not selected cities"),
        col = c("red", "black"), pch = 16)
 ```
 
+
 Figure \ref{fig:cities} visualizes the cities as points in ascending order by their populations. The red points represent cities that were selected by our sampling method, the black ones represent the ones that were not. We can observe that more populated cities make up the majority of our selection, as they were more likely to be selected. In fact, out of the 20 most populated cities, we picked 5, while we chose 0 out of the 20 least populated ones.
 
 ### 5.
@@ -129,18 +133,20 @@ Figure \ref{fig:cities} visualizes the cities as points in ascending order by th
 Figure \ref{fig:hist_original} shows the histogram of the size of all Swedish cities, while figure \ref{fig:hist_sample} is the histogram of the size of the 20 selected cities. We can observe that both histograms look similar, this is due to the randomness of the sampling method. We can also see that cities with large population are very rare in the first case, but much more frequent in the second one. This is because our \texttt{sample()} function selects cities with large populations with a higher probability. Cities with smaller populations are still in majority, since there were a lot more of them originally, but their proportion is much smaller than before sampling.
 
 
+
 ```{r, fig.cap="\\label{fig:hist_original} Histogram of the sizes of cities in Sweden", out.width = "80%", fig.pos='h', fig.align='center'}
 hist(data$Population/1000, breaks = 50, 
-     ylab = "Frequency", xlab = "Population (in thousands)", main = "")
+     ylab = "Frequency", xlab = "Population (in thousands)", main = "", col="grey")
 ```
+
 
 ```{r, fig.cap="\\label{fig:hist_sample} Histogram of the sizes of the selected cities", out.width = "80%", fig.pos='h', fig.align='center'}
 hist(sample$Population/1000, breaks = 50, 
-     ylab = "Frequency", xlab = "Population (in thousands)", main = "")
+     ylab = "Frequency", xlab = "Population (in thousands)", main = "", col="grey")
 ```
 
 
-\pagebreak
+-----------
 
 # Question 2: Different distributions
 
@@ -231,8 +237,9 @@ From this point, using \texttt{my\textunderscore DE} we can generate 10000 rando
 x <- my_DE(10000)
 
 # Histogram of the random numbers
-hist(x, breaks = 40, col = "cyan", main = "Histogram of DE(0,1)")
+hist(x, breaks = 40, col = "grey", main = "Histogram of DE(0,1)")
 ```
+
 
 Looking at figure \ref{fig:CDF1} we can see that it looks like a Laplace distribution centered around 0. Therefore the results obtained using the generator function \texttt{my\textunderscore DE} look reasonable. 
 
@@ -244,9 +251,10 @@ library(rmutil)
 
 ```{r, fig.cap="\\label{fig:CDF2} Histogram of 10000 generated random numbers from DE(0,1) using rlaplace function", out.width = "80%", fig.pos='h'}
 # Histogram of  DE(0,1) by directly sample from the laplace. 
-hist(rlaplace(10000), breaks = 40, col = "cyan", main = "Histogram of DE(0,1)", xlab = "x") 
+hist(rlaplace(10000), breaks = 40, col = "grey", main = "Histogram of DE(0,1)", xlab = "x") 
 
 ```
+
 
 As we can see both histograms look alike, confirming the previous statements and giving reliability to the results. 
 
@@ -280,6 +288,7 @@ fgennorm <- function(c){
 
 ```
 
+
 ```{r,echo=FALSE}
 # Set seed 
 set.seed(12345)
@@ -295,6 +304,7 @@ for (i in 1:n){
 }
 
 ```
+
 
 ```{r, fig.cap="\\label{fig:Normal1} Histogram of 2000 generated random numbers from N(0,1) using the Acceptance/Rejection method", out.width = "80%", fig.pos='h'}
 # Histogram of 2000 generated random numbers N(0,1)
@@ -336,7 +346,8 @@ table(c_value*0.5*exp(-abs(nr)) >= dnorm(nr))
 ```
 
 
-\pagebreak
+
+----------
 
 # Appendix
 

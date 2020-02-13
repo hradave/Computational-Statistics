@@ -1,0 +1,35 @@
+---
+title: "732A90: Computational Statistics"
+subtitle: "Computer lab4 - Group11"
+author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document:
+      fig_caption: yes
+header-includes:
+- \usepackage{float}
+---
+
+```{r setup, include=FALSE, eval=TRUE, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Question 2:
+
+```{r}
+load(file = "chemical.RData") 
+```
+
+```{r}
+plot(X,Y)
+```
+
+
+
+
+
+
+
+
+
+
