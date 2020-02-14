@@ -316,7 +316,7 @@ hist(A[,1], breaks = 40, col = "gray", xlab = "x", main = "Histogram of N(0,1)")
 
 
 
-```{r, fig.cap="\\label{fig:Normal1} Histogram of 2000 generated random numbers from N(0,1) by using rnorm().", out.width = "80%", fig.pos='h'}
+```{r, fig.cap="\\label{fig:Normal2} Histogram of 2000 generated random numbers from N(0,1) by using rnorm().", out.width = "80%", fig.pos='h'}
 # Histogram of 2000 random N(0,1) numbers
 hist(rnorm(2000), breaks = 40, col = "grey", xlab = "x" , main ="Histogram of N(0,1)")
 
