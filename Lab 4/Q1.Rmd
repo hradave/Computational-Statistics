@@ -1,0 +1,153 @@
+---
+title: '732A90: Computational Statistics'
+author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    includes:
+      in_header: my_header.tex
+subtitle: Computer lab4 - Group11
+header-includes: \usepackage{float}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Question 1: Computations with Metropolis-Hastings
+
+In this question we define the density function $f(x)$ as:
+
+$$f(x)\propto x^5e^{-x}, x>0$$
+This density function is known up to some constant of proportionality, which is 120.
+
+```{r warning=FALSE}
+# R version
+RNGversion('3.5.1')
+#libraries
+library(coda)
+```
+
+
+### 1.
+
+In the first step we use the Metropolis-Hastings algorithm to generate samples from the posterior distribution $f(x)$ by using
+the log-normal $LN(X_t,1)$ as the proposal distribution. We take 1 as a starting point, because we expect this value to be within the range of possible values of the distribution defined above.
+
+```{r}
+
+# 1.1.
+posterior <- function(x){
+  x^5 * exp(-x)
+}
+
+# Seed
+set.seed(1234567890)
+
+posterior_sampler_ln <- function(tmax=1000, starting_point = 1) {
+  X=rep(starting_point,tmax)
+  for (t in 1:tmax) {
+    Y = rlnorm(1,meanlog = X[t],sdlog = 1)
+    U = runif(1,min = 0, max = 1)
+    alpha = min(1,
+                (posterior(Y) * dlnorm(X[t],meanlog = Y, sdlog = 1)) /
+                (posterior(X[t]) * dlnorm(Y, meanlog = X[t], sdlog = 1)))
+    if (U < alpha) {
+      X[t+1] = Y
+    } else {
+      X[t+1] = X[t]
+    }
+    t = t+1
+  }
+  return(X)
+}
+```
+
+
+The time series plot of the obtained chain of samples can be observed in Figure \ref{fig:lognormal}. The plot does not show that the chain converges, especially after the first 4000 iterations. This implies that the sample is not close to the posterior. There does not seem to be a burn-in period, because samples from many iterations are close to the starting point (which was 1 in this case).
+
+```{r, fig.cap="\\label{fig:lognormal} Metropolis-Hastings sampler with log-normal proposal", out.width = "80%", fig.pos='h', fig.align='center' }
+tmax=10000
+# Seed
+set.seed(1234567890)
+
+plot(1:(tmax+1),posterior_sampler_ln(tmax = tmax, starting_point = 1), type ='l', xlab = "time", ylab = "X")
+
+```
+
+
+### 2.
+
+Now we perform Step 1 using the chi-square distribution $\chi^2(\lfloor X_t+1\rfloor)$ as the proposal distribution, where $\lfloor x\rfloor$ is the \texttt{floor()} function.
+
+```{r}
+posterior_sampler_chisq <- function(tmax=1000, starting_point = 1) {
+  X=rep(starting_point,tmax)
+  for (t in 1:tmax) {
+    Y = rchisq(1,df = floor(X[t]+1))
+    U = runif(1,min = 0, max = 1)
+    alpha = min(1,
+                (posterior(Y) * dchisq(X[t],df = floor(Y+1))) /
+                (posterior(X[t]) * dchisq(Y, df = floor(X[t]+1))))
+    if (U < alpha) {
+      X[t+1] = Y
+    } else {
+      X[t+1] = X[t]
+    }
+    t = t+1
+  }
+  return(X)
+}
+```
+
+The time series plot is shown in Figure \ref{fig:chisquare}, and it can be seen that already in 1000 iterations, the chain converges much more than in the previous case. Again there does not seem to be a burn-in period, the starting value of 1 seems to be a probable value of the posterior distribution, so we do not discard any samples from the beginning of the chain.
+
+```{r, fig.cap="\\label{fig:chisquare} Metropolis-Hastings sampler with chi-square proposal", out.width = "80%", fig.pos='h', fig.align='center' }
+tmax=1000
+# Seed
+set.seed(1234567890)
+
+plot(1:(tmax+1), posterior_sampler_chisq(tmax = tmax, starting_point = 1), type = 'l', xlab = "time", ylab = "X")
+```
+
+
+### 3.
+
+COMPARE THE RESULTS FROM STEPS 2 AND 3 AND MAKE CONCLUSIONS!!!!!!
+
+### 4.
+
+Now we generate 10 MCMC sequences using the sample generators from Steps 1 and 2, and analyze their convergence using the Gelman-Rubin method. The starting points for the 10 sequences are 1,2,...,10.
+
+The output of the Gelman-Rubin's convergence diagnostic for 1000 iterations:
+
+```{r}
+starting_points = seq(1,10)
+MCMC_seqs = mcmc.list()
+tmax=1000
+# Seed
+set.seed(1234567890)
+for (k in starting_points) {
+  MCMC_seqs[[k]] = as.mcmc(posterior_sampler_chisq(tmax = tmax, starting_point = k))
+}
+
+print(gelman.diag(MCMC_seqs))
+```
+
+The potential scale reduction factor is based on the comparison of within-chain and between-chain variances. For 1000 iterations, its point estimate is around 1 and its upper confidence limit is also very close to 1, so according to this diagnostics, approximate convergence has been achieved at 1000 iterations. Even for only 100 iterations, both the point estimate and the upper limit are under 1.1.
+
+
+
+### 5.
+
+
+
+
+
+### 6.
+
+
+
+
+
