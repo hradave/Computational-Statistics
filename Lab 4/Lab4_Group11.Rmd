@@ -218,6 +218,9 @@ plot(X,Y, xlab = "Day of the measurment"
      , ylab = "Measured concentration of the chemical", col = "grey", pch = 16)
 ```
 
+
+Y and X seem linearly correlated, therefore a linear regression with normally distributed residuals seems like a good approach. 
+
 ### 2.
 
 Using the random-walk Bayesian model with $n$ number of observations and $\vec{\mu}=(\mu_{1},...,\mu_{n})$ uknown parameters: $$Y_{i}=N(\mu_{i}, 0.2),\quad i=1,...,n$$
@@ -261,7 +264,7 @@ p(\vec{\mu}|\vec{Y}) &\propto& p(\vec{Y}|\vec{\mu})p(\vec{\mu})\\
 
 And finally, once we have the posterior, we can compute the the probability distribution $p(\mu_{i}|\vec{\mu}_{i},\vec{Y})$, where $\vec\mu_{-i}$ is a vector containing all $\mu$ values except for $\mu_{i}$.We also know that we can discard all the elements that do not contain $\vec\mu_{i}$ as we are looking for a posterior up to a constant proportionality. Using Hint C, we get to the following result:
 
-$$p(\mu_{i}|\vec{\mu}_{-i},\vec{Y}) \propto exp\left[-\frac{\left(\mu_{i}-(Y_{i}+Y_{i-1}+Y_{i+1})/3\right)^{2}}{2\sigma^{2}/3}\right]$$
+$$p(\mu_{i}|\vec{\mu}_{-i},\vec{Y}) \propto exp\left[-\frac{\left(\mu_{i}-(Y_{i}+\mu_{i-1}+\mu_{i+1})/3\right)^{2}}{2\sigma^{2}/3}\right]$$
 
 ### 4. 
 
@@ -269,28 +272,36 @@ We implement the Gibbs samples using the distributions found and initial value $
 
 The expected value of $\vec\mu$ is: 
 
-### I'M NOT SURE ABOUT THIS
 ```{r}
 # 2.4
 
 gibbs_sampler <- function(Tmax) {
   d <- length(Y)
   sigma <- 0.2
-  mu <- matrix(0, nrow = Tmax, ncol = d)
+  mu <- matrix(0, nrow = Tmax, ncol = d+1)
   t <- 0
   while (t<Tmax) {
     for (i in 1:d) {
-      mu[t+1,i] <- exp((-3*(mu[i]-(Y[i]+Y[i+1])/3)^2)/(2*sigma^2))
+      mu[t+1,i] <- exp((-3*(mu[t+1,i]-sum(Y[i],mu[t+1,i-1],mu[t+1,i+1], na.rm = T)/3)^2)/(2*(sigma^2)))
     }
     
-  t=t+1#i added this, so it runs \David
+  t=t+1
   }
-  
-  
-  mu
+  mu[,-(d+1)]
 }
 
-gibbs_sampler(10)
+Y_gibbs <- colSums(gibbs_sampler(1000))/1000
+Y_gibbs
+```
+
+In \ref{fig:gibbs} there is a plot of the dependence of \texttt{Y} on \texttt{X}.  
+
+```{r, fig.cap="\\label{fig:gibbs} Comparison between Y and expected value of mu", out.width = "80%", fig.pos='h', fig.align='center' }
+# 2.1
+
+plot(X,Y, xlab = "Day of the measurment"
+     , ylab = "Measured concentration of the chemical", col = "grey", pch = 16)
+points(Y_gibbs, col = "red", pch = 16)
 ```
 
 
