@@ -65,15 +65,19 @@ posterior_sampler_ln <- function(tmax=1000, starting_point = 1) {
 ```
 
 
-The time series plot of the obtained chain of samples can be observed in Figure \ref{fig:lognormal}. The plot does not show that the chain converges, especially after the first 4000 iterations. This implies that the sample is not close to the posterior. There does not seem to be a burn-in period, because samples from many iterations are close to the starting point (which was 1 in this case).
+The time series plot of the obtained chain of samples can be observed in Figure \ref{fig:lognormal}. The plot does not show that the chain converges, because it often takes the same value for many iterations and then jumps to a very different one. This implies that the sample is not close to the posterior. There does not seem to be a burn-in period, because samples from many iterations are close to the starting point (which was 1 in this case).
 
 ```{r, fig.cap="\\label{fig:lognormal} Metropolis-Hastings sampler with log-normal proposal", out.width = "80%", fig.pos='h', fig.align='center' }
-tmax=10000
+tmax=1000
 # Seed
 set.seed(1234567890)
+ln_sample = posterior_sampler_ln(tmax = tmax, starting_point = 1)
+plot(1:(tmax+1),ln_sample, type ='l', xlab = "time", ylab = "X")
+```
 
-plot(1:(tmax+1),posterior_sampler_ln(tmax = tmax, starting_point = 1), type ='l', xlab = "time", ylab = "X")
+```{r, fig.cap="\\label{fig:lognormal_hist} Histogram of generated samples with log-normal proposal (MH sampler)", out.width = "80%", fig.pos='h', fig.align='center' }
 
+hist(ln_sample, breaks = 20, main = "", xlab = "X")
 ```
 
 
@@ -82,6 +86,9 @@ plot(1:(tmax+1),posterior_sampler_ln(tmax = tmax, starting_point = 1), type ='l'
 Now we perform Step 1 using the chi-square distribution $\chi^2(\lfloor X_t+1\rfloor)$ as the proposal distribution, where $\lfloor x\rfloor$ is the \texttt{floor()} function.
 
 ```{r}
+#Set seed
+set.seed(1234567890)
+
 posterior_sampler_chisq <- function(tmax=1000, starting_point = 1) {
   X=rep(starting_point,tmax)
   for (t in 1:tmax) {
@@ -101,24 +108,28 @@ posterior_sampler_chisq <- function(tmax=1000, starting_point = 1) {
 }
 ```
 
-The time series plot is shown in Figure \ref{fig:chisquare}, and it can be seen that already in 1000 iterations, the chain converges much more than in the previous case. Again there does not seem to be a burn-in period, the starting value of 1 seems to be a probable value of the posterior distribution, so we do not discard any samples from the beginning of the chain.
+The time series plot is shown in Figure \ref{fig:chisquare}, and it can be seen that the chain converges much more than in the previous case. Again there does not seem to be a burn-in period, the starting value of 1 seems to be a probable value of the distribution, so we do not discard any samples from the beginning of the chain.
 
 ```{r, fig.cap="\\label{fig:chisquare} Metropolis-Hastings sampler with chi-square proposal", out.width = "80%", fig.pos='h', fig.align='center' }
 tmax=1000
 # Seed
 set.seed(1234567890)
+chi_sample = posterior_sampler_chisq(tmax = tmax, starting_point = 1)
+plot(1:(tmax+1), chi_sample, type = 'l', xlab = "time", ylab = "X")
+```
 
-plot(1:(tmax+1), posterior_sampler_chisq(tmax = tmax, starting_point = 1), type = 'l', xlab = "time", ylab = "X")
+```{r, fig.cap="\\label{fig:chisquare_hist} Histogram of generated samples with Chi-square proposal (MH sampler)", out.width = "80%", fig.pos='h', fig.align='center' }
+hist(chi_sample, breaks = 20, main = "", xlab = "X")
 ```
 
 
 ### 3.
 
-COMPARE THE RESULTS FROM STEPS 2 AND 3 AND MAKE CONCLUSIONS!!!!!!
+We recognise that the probability distribution function $f(x)$ belongs to a gamma distribution, therefore we know that $f(x)$ must have a positive skew. This attribute is also true for the distribution of samples from Step 2 (Figure \ref{fig:chisquare_hist}), but untrue for the distribution of samples from Step 1 (Figure \ref{fig:lognormal_hist}). Also, the chain with the log-normal proposal does not converge, but the chain with the Chi-square proposal does, so we conclude that the samples generated from Step 2 are a better approximation of samples from the posterior distribution.
 
 ### 4.
 
-Now we generate 10 MCMC sequences using the sample generators from Steps 1 and 2, and analyze their convergence using the Gelman-Rubin method. The starting points for the 10 sequences are 1,2,...,10.
+Now we generate 10 MCMC sequences using the sample generators from Step 2, and analyze their convergence using the Gelman-Rubin method. The starting points for the 10 sequences are 1,2,...,10.
 
 The output of the Gelman-Rubin's convergence diagnostic for 1000 iterations:
 
@@ -141,13 +152,37 @@ The potential scale reduction factor is based on the comparison of within-chain 
 
 ### 5.
 
+In this step we estimate
 
+$$\int\limits_{0}^{\infty}xf(x)dx$$
+using the samples generated from Steps 1 and 2.
 
+Based on the slides from Lecture 4 we can use MCMC samples from $p(\theta|D)$ to obtain a point estimator by calculating the sample average: $$\theta^* = \int\theta p(\theta|D) \approx \frac{1}{n} \sum\limits_{i=1}^{n}\theta_i$$
+```{r}
 
+# 1.5
+# Seed
+set.seed(1234567890)
+#using Step1
+#mean(ln_sample) #large variance; 2.949404
+
+#using Step2
+#mean(chi_sample) #small variance; 5.636084
+```
+
+The sample average of the chain generated in Step 1 is **2.95** and in Step 2 is **5.63**.
+
+If we do not set the seed before the sample generation, then we get highly variable averages from Step 1, but from Step 2 it is almost always between 5.5 and 6.5.
 
 ### 6.
 
+According to Definition 4.5 in Mathematical Statistics with Applications by Wackerly et al., the integral in Step 5 is equal to the expected value of random variable X, where X can take values between 0 and $\infty$.
 
+The generated distribution with probability density function $f(x)$ is a gamma distribution, so we can express $f(x)$ in its general form as
+$$f(x) = \Bigg{[}\frac{1}{\Gamma(\alpha)\beta^\alpha}\Bigg{]}x^{\alpha-1}e^{-x/\beta} $$, where $0<x<\infty$
 
+Thus $E(X) = \alpha\beta$. In our case $\alpha = 6, \beta=1$, so $E(X) = 6$.
+
+This is the actual value of the integral in Step 5, so we conclude that our estimation using the samples generated in Step 2 with a Chi-square proposal distribution seems accurate, whereas the estimation from the samples of Step 1 with the log-normal proposal does not seem accurate at all.
 
 
