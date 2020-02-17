@@ -132,7 +132,7 @@ We recognise that the probability distribution function $f(x)$ belongs to a cert
 
 ### 4.
 
-Now we generate 10 MCMC sequences using the sample generators from Step 2, and analyze their convergence using the Gelman-Rubin method. The starting points for the 10 sequences are 1,2,...,10.
+Now we generate 10 MCMC sequences using the sample generator from Step 2, and analyze their convergence using the Gelman-Rubin method. The starting points for the 10 sequences are 1,2,...,10.
 
 The output of the Gelman-Rubin's convergence diagnostic for 1000 iterations:
 
