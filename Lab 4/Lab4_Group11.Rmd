@@ -128,7 +128,7 @@ hist(chi_sample, breaks = 20, main = "", xlab = "X")
 
 ### 3.
 
-We recognise that the probability distribution function $f(x)$ belongs to a gamma distribution, therefore we know that $f(x)$ must have a positive skew. This attribute is also true for the distribution of samples from Step 2 (Figure \ref{fig:chisquare_hist}), but untrue for the distribution of samples from Step 1 (Figure \ref{fig:lognormal_hist}). Also, the chain with the log-normal proposal does not converge, but the chain with the Chi-square proposal does, so we conclude that the samples generated from Step 2 are a better approximation of samples from the posterior distribution.
+We recognise that the probability distribution function $f(x)$ belongs to a certain gamma distribution, therefore we know that $f(x)$ must have a positive skew. This attribute is also true for the distribution of samples from Step 2 (Figure \ref{fig:chisquare_hist}), but untrue for the distribution of samples from Step 1 (Figure \ref{fig:lognormal_hist}). Also, the chain with the log-normal proposal does not converge, but the chain with the Chi-square proposal does, so we conclude that the samples generated from Step 2 are a better approximation of samples from the posterior distribution.
 
 ### 4.
 
