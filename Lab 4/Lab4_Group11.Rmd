@@ -277,20 +277,26 @@ The expected value of $\vec\mu$ is:
 gibbs_sampler <- function(Tmax) {
   d <- length(Y)
   sigma <- 0.2
-  mu <- matrix(0, nrow = Tmax, ncol = d+1)
-  t <- 0
+  mu <- matrix(0, nrow = Tmax, ncol = d)
+  t <- 1
   while (t<Tmax) {
     for (i in 1:d) {
-      mu[t+1,i] <- exp((-3*(mu[t+1,i]-sum(Y[i],mu[t+1,i-1],mu[t+1,i+1], na.rm = T)/3)^2)/(2*(sigma^2)))
+      if (i==1) {
+        mu[t+1,i] <- exp((-(mu[t,i]-(Y[i] + mu[t,i+1])/2)^2)/(sigma^2))
+      }
+      else if (i==d) {
+        mu[t+1,i] <- exp((-(mu[t,i]-(Y[i] + mu[t+1,i-1])/2)^2)/(sigma^2))
+      }
+      else {
+        mu[t+1,i] <- exp((-3*(mu[t,i]-(Y[i]+mu[t+1,i-1]+mu[t,i+1])/3)^2)/(2*(sigma^2)))
+      }
     }
-    
   t=t+1
   }
-  mu[,-(d+1)]
+  mu
 }
 
 Y_gibbs <- colSums(gibbs_sampler(1000))/1000
-Y_gibbs
 ```
 
 In \ref{fig:gibbs} there is a plot of the dependence of \texttt{Y} on \texttt{X}.  
@@ -302,6 +308,9 @@ plot(X,Y, xlab = "Day of the measurment"
      , ylab = "Measured concentration of the chemical", col = "grey", pch = 16)
 points(Y_gibbs, col = "red", pch = 16)
 ```
+
+It makes sense that the concentration decresases with time. The burn out period is of 15 days, after that the concentration is about 0. 
+
 
 
 ----------
