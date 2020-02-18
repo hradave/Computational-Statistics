@@ -18,9 +18,9 @@ knitr::opts_chunk$set(echo = FALSE)
 
 # Question 1: Computations with Metropolis-Hastings
 
-In this question we define the density function $f(x)$ as:
+In this question we define the density function $f(x)$ as
 
-$$f(x)\propto x^5e^{-x}, x>0$$
+$$f(x)\propto x^5e^{-x}, \quad x>0.$$
 This density function is known up to some constant of proportionality, which is 120.
 
 ```{r warning=FALSE}
@@ -134,9 +134,8 @@ We recognise that the probability distribution function $f(x)$ belongs to a cert
 
 Now we generate 10 MCMC sequences using the sample generator from Step 2, and analyze their convergence using the Gelman-Rubin method. The starting points for the 10 sequences are 1,2,...,10.
 
-The output of the Gelman-Rubin's convergence diagnostic for 1000 iterations:
 
-```{r}
+```{r, include=FALSE}
 
 #1.4
 starting_points = seq(1,10)
@@ -150,8 +149,7 @@ for (k in starting_points) {
 
 print(gelman.diag(MCMC_seqs))
 ```
-
-The potential scale reduction factor is based on the comparison of within-chain and between-chain variances. For 1000 iterations, its point estimate is around 1 and its upper confidence limit is also very close to 1, so according to this diagnostics, approximate convergence has been achieved at 1000 iterations. Even for only 100 iterations, both the point estimate and the upper limit are under 1.1.
+The output of the Gelman-Rubin's convergence diagnostic for 1000 iterations gives the potential scale reduction factors with the corresponding point estimate and the upper confidence limit. The potential scale reduction factor is based on the comparison of within-chain and between-chain variances. For 1000 iterations, its point estimate is 1.01 and its upper confidence limit is 1.02, which is very close to 1. So according to this diagnostics, approximate convergence has been achieved at 1000 iterations. Even for only 100 iterations, both the point estimate and the upper limit are under 1.1.
 
 
 
@@ -184,9 +182,10 @@ If we do not set the seed before the sample generation, then we get highly varia
 According to Definition 4.5 in Mathematical Statistics with Applications by Wackerly et al., the integral in Step 5 is equal to the expected value of random variable X, where X can take values between 0 and $\infty$.
 
 The generated distribution with probability density function $f(x)$ is a gamma distribution, so we can express $f(x)$ in its general form as
-$$f(x) = \Bigg{[}\frac{1}{\Gamma(\alpha)\beta^\alpha}\Bigg{]}x^{\alpha-1}e^{-x/\beta} $$, where $0<x<\infty$
+$$f(x) = \Bigg{[}\frac{1}{\Gamma(\alpha)\beta^\alpha}\Bigg{]}x^{\alpha-1}e^{-x/\beta},$$
 
-Thus $E(X) = \alpha\beta$. In our case $\alpha = 6, \beta=1$, so $E(X) = 6$.
+
+where $0<x<\infty$. Thus $E(X) = \alpha\beta$. In our case $\alpha = 6, \beta=1$, so $E(X) = 6$.
 
 This is the actual value of the integral in Step 5, so we conclude that our estimation using the samples generated in Step 2 with a Chi-square proposal distribution seems accurate, whereas the estimation from the samples of Step 1 with the log-normal proposal does not seem accurate at all.
 
