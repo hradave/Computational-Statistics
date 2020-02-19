@@ -41,6 +41,7 @@ the log-normal $LN(X_t,1)$ as the proposal distribution. We take 1 as a starting
 ```{r}
 
 # 1.1.
+
 posterior <- function(x){
   x^5 * exp(-x)
 }
@@ -48,11 +49,13 @@ posterior <- function(x){
 # Seed
 set.seed(1234567890)
 
+# Metropolis–Hastings algorithm
 posterior_sampler_ln <- function(tmax=1000, starting_point = 1) {
   X=rep(starting_point,tmax)
   for (t in 1:tmax) {
-    Y = rlnorm(1,meanlog = X[t],sdlog = 1)
-    U = runif(1,min = 0, max = 1)
+    Y = rlnorm(1,meanlog = X[t],sdlog = 1) # Proposal distribution 
+    U = runif(1,min = 0, max = 1) # Generate uniform Unif(0,1)
+    # Acceptance step
     alpha = min(1,
                 (posterior(Y) * dlnorm(X[t],meanlog = Y, sdlog = 1)) /
                 (posterior(X[t]) * dlnorm(Y, meanlog = X[t], sdlog = 1)))
@@ -94,11 +97,13 @@ Now we perform Step 1 using the chi-square distribution $\chi^2(\lfloor X_t+1\rf
 #Set seed
 set.seed(1234567890)
 
+# Metropolis–Hastings algorithm
 posterior_sampler_chisq <- function(tmax=1000, starting_point = 1) {
   X=rep(starting_point,tmax)
   for (t in 1:tmax) {
-    Y = rchisq(1,df = floor(X[t]+1))
-    U = runif(1,min = 0, max = 1)
+    Y = rchisq(1,df = floor(X[t]+1)) # Proposal distribution
+    U = runif(1,min = 0, max = 1) # Generate uniform Unif(0,1)
+    # Acceptance step
     alpha = min(1,
                 (posterior(Y) * dchisq(X[t],df = floor(Y+1))) /
                 (posterior(X[t]) * dchisq(Y, df = floor(X[t]+1))))
@@ -262,7 +267,7 @@ $$p(\mu_{1}|\vec{\mu}_{-1},\vec{Y}) \propto \text{exp}\left[-\frac{\left(\mu_{1}
 and
 
 
-$$p(\mu_{n}|\vec{\mu}_{-1},\vec{Y}) \propto \text{exp}\left[-\frac{\left(\mu_{n}-(Y_{n}+\mu_{n-1})/2\right)^{2}}{\sigma^{2}}\right], \quad \text{for }i=n.$$
+$$p(\mu_{n}|\vec{\mu}_{-n},\vec{Y}) \propto \text{exp}\left[-\frac{\left(\mu_{n}-(Y_{n}+\mu_{n-1})/2\right)^{2}}{\sigma^{2}}\right], \quad \text{for }i=n.$$
 
 
 
@@ -270,16 +275,26 @@ By using Hint C, we get to the result
 
 $$p(\mu_{i}|\vec{\mu}_{-i},\vec{Y}) \propto \text{exp}\left[-\frac{\left(\mu_{i}-(Y_{i}+\mu_{i-1}+\mu_{i+1})/3\right)^{2}}{2\sigma^{2}/3}\right], \quad \text{for } i=2,...,n-1.$$
 
+Since both the likelihood and the prior are normal, the obtained posterior is normally distributed. Thus we can summarize the result as follows: 
+
+
+
+$$p(\mu_{1}|\vec{\mu}_{-1},\vec{Y}) = N \left( \frac{Y_1+\mu_2}{2}, \frac{\sigma^2}{2} \right),$$
+
+$$p(\mu_{n}|\vec{\mu}_{-n},\vec{Y}) = N \left( \frac{Y_n+\mu_{n-1}}{2}, \frac{\sigma^2}{2} \right),$$
+
+
+$$p(\mu_{i}|\vec{\mu}_{-i},\vec{Y}) = N \left( \frac{Y_i+\mu_{i-1}+\mu_{i+1}}{3}, \frac{\sigma^2}{3} \right).$$
 
 ### 4. 
 
-We implement the Gibbs samples using the distributions found and initial value $\vec\mu^{0}=(0,...,0)$.  This code snippet (see Appendix) computes $n$ values of $\vec\mu$ and computes the expected value of $\vec\mu$ using a Monte Carlo approach. In this particular case $n=1000$. 
+We implement the Gibbs sampler using the distributions found and initial value $\vec\mu^{0}=(0,...,0)$.  This code snippet (see Appendix) computes $n$ values of $\vec\mu$ and computes the expected value of $\vec\mu$ using a Monte Carlo approach. In this particular case $n=1000$. 
 
-The expected value of $\vec\mu$ is: 
 
 ```{r}
 # 2.4
 
+# Gibbs sampler
 gibbs_sampler <- function(Tmax) {
   d <- length(Y)
   sigma <- 0.2
@@ -306,7 +321,7 @@ Y_gibbs <- colSums(gibbs_sampler(1000))/1000
 
 ```
 
-In \ref{fig:gibbs} there is a plot of the dependence of \texttt{Y} on \texttt{X} and the comparison with the expected values of mu.   
+In Figure \ref{fig:gibbs} there is a plot of the dependence of \texttt{Y} on \texttt{X} and the comparison with the expected values of $\vec\mu$.   
 
 ```{r, fig.cap="\\label{fig:gibbs} Comparison between Y and expected value of mu", out.width = "80%", fig.pos='h', fig.align='center' }
 
@@ -316,7 +331,7 @@ points(Y_gibbs, col = "red", pch = 16)
 legend("bottomright", legend=c("Y", "Expected values"), col=c("grey", "red"), pch = 16)
 ```
 
-The result is considered as positive as observing the plot it is possible to see that the expected values of $\mu$ follow the same pattern that \texttt{Y} in terms of dependence on \texttt{X}. Also, the expected values seem to have removed the noise produced by the accuracy of the instrumentat used to measure, as the expected values of $mu$ are less spread than those of \texttt{Y}. 
+The result is considered as positive as observing the plot it is possible to see that the expected values of $\vec\mu$ follow the same pattern that \texttt{Y} in terms of dependence on \texttt{X}. Also, the expected values seem to have removed the noise produced by the accuracy of the instrumentat used to measure, as the expected values of $\vec\mu$ are less spread than those of \texttt{Y}. 
 
 
 ### 5. 
@@ -330,7 +345,7 @@ plot(mu_n, type="l", ylim = c(0.75, 2.25), main="Burning period and convergence"
 
 In order to verify that the MCMC explores the parameter space efficiently, we want to assure that the chain does not stay in the same state for too long or has too many consecutive steps in one direction. In this case, the traceplot behaves accordingly. 
 
-Burning in is a method that erases iterations at the beginning of a Markov Chain Monte Carlo (MCMC) run, it is a way to select a better starting point that just one by random. It can be seen from the plot that there is a burn in period of 1 iteration, after that one the value of mu moves between 1.25 and 1.75. 
+Burning in is a method that erases iterations at the beginning of a Markov Chain Monte Carlo (MCMC) run, it is a way to select a better starting point that just one by random. It can be seen from the plot in Figure \ref{fig:burn_in} that there is a burn in period of 1 iteration, after that one the value of $\vec\mu$ moves between 1.25 and 1.75. 
 
 ----------
 
