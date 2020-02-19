@@ -7,6 +7,8 @@ output:
     fig_caption: yes
     includes:
       in_header: my_header.tex
+  html_document:
+    df_print: paged
 subtitle: Computer lab4 - Group11
 header-includes: \usepackage{float}
 ---
@@ -286,37 +288,49 @@ gibbs_sampler <- function(Tmax) {
   while (t<Tmax) {
     for (i in 1:d) {
       if (i==1) {
-        mu[t+1,i] <- exp((-(mu[t,i]-(Y[i] + mu[t,i+1])/2)^2)/(sigma^2))
+        mu[t+1,i] <- rnorm(1, (Y[i]+mu[t,i+1])/2, sigma/sqrt(2))
       }
       else if (i==d) {
-        mu[t+1,i] <- exp((-(mu[t,i]-(Y[i] + mu[t+1,i-1])/2)^2)/(sigma^2))
+        mu[t+1,i] <- rnorm(1,(Y[i] + mu[t+1,i-1])/2, sigma/sqrt(2))
       }
       else {
-        mu[t+1,i] <- exp((-3*(mu[t,i]-(Y[i]+mu[t+1,i-1]+mu[t,i+1])/3)^2)/(2*(sigma^2)))
+        mu[t+1,i] <- rnorm(1, (Y[i]+mu[t+1,i-1]+mu[t,i+1])/3, sigma/sqrt(3))
       }
     }
-  t=t+1
+    t=t+1
   }
   mu
 }
 
 Y_gibbs <- colSums(gibbs_sampler(1000))/1000
+
 ```
 
-In \ref{fig:gibbs} there is a plot of the dependence of \texttt{Y} on \texttt{X}.  
+In \ref{fig:gibbs} there is a plot of the dependence of \texttt{Y} on \texttt{X} and the comparison with the expected values of mu.   
 
 ```{r, fig.cap="\\label{fig:gibbs} Comparison between Y and expected value of mu", out.width = "80%", fig.pos='h', fig.align='center' }
-# 2.1
 
 plot(X,Y, xlab = "Day of the measurment"
      , ylab = "Measured concentration of the chemical", col = "grey", pch = 16)
 points(Y_gibbs, col = "red", pch = 16)
+legend("bottomright", legend=c("Y", "Expected values"), col=c("grey", "red"), pch = 16)
 ```
 
-It makes sense that the concentration decresases with time. The burn out period is of 15 days, after that the concentration is about 0. 
+The result is considered as positive as observing the plot it is possible to see that the expected values of $\mu$ follow the same pattern that \texttt{Y} in terms of dependence on \texttt{X}. Also, the expected values seem to have removed the noise produced by the accuracy of the instrumentat used to measure, as the expected values of $mu$ are less spread than those of \texttt{Y}. 
 
 
+### 5. 
 
+```{r, fig.cap="\\label{fig:burn_in} Burn in period and convergence", out.width = "80%", fig.pos='h', fig.align='center' }
+
+mu_n <- gibbs_sampler(1000)[,length(Y)]
+plot(mu_n, type="l", ylim = c(0.75, 2.25), main="Burning period and convergence",
+     ylab="mu", xlab="t")
+```
+
+In order to verify that the MCMC explores the parameter space efficiently, we want to assure that the chain does not stay in the same state for too long or has too many consecutive steps in one direction. In this case, the traceplot behaves accordingly. 
+
+Burning in is a method that erases iterations at the beginning of a Markov Chain Monte Carlo (MCMC) run, it is a way to select a better starting point that just one by random. It can be seen from the plot that there is a burn in period of 1 iteration, after that one the value of mu moves between 1.25 and 1.75. 
 
 ----------
 
