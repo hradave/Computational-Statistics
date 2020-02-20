@@ -1,0 +1,95 @@
+---
+title: '732A90: Computational Statistics'
+author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    includes:
+      in_header: my_header.tex
+  html_document:
+    df_print: paged
+subtitle: Computer lab5 - Group11
+header-includes: \usepackage{float}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Question 1: Hypothesis testing
+
+### 1.
+
+
+
+
+### 2.
+
+
+
+
+### 3.
+
+
+
+
+### 4.
+
+
+
+
+### 5.
+
+
+
+
+
+
+----------
+
+# Question 2: Bootstrap, jackknife and confidence intervals
+
+### 1.
+
+
+
+
+### 2.
+
+
+
+
+### 3.
+
+
+
+
+### 4.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------
+
+# Appendix
+
+```{r ref.label=knitr::all_labels(),echo=TRUE,eval=FALSE}
+
+```
