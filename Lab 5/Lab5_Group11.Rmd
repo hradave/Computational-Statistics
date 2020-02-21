@@ -17,6 +17,15 @@ header-includes: \usepackage{float}
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
+
+
+```{r}
+# Packages
+library("boot")
+```
+
+
+
 # Question 1: Hypothesis testing
 
 ### 1.
@@ -50,35 +59,181 @@ knitr::opts_chunk$set(echo = FALSE)
 
 # Question 2: Bootstrap, jackknife and confidence intervals
 
-### 1.
+In this task we are going to estimate home prices in Albuquerque back in 1993, by using bootstrap, jackknife and confidence intervals. For this, we import the data set \texttt{prices1.csv} consisting of $110$ observations, where \texttt{Price} is the variable of interest. 
 
+
+### 1. 
+
+First, we plot a histogram of the variable \texttt{Price}, to get an idea of its distribution. 
+
+
+```{r}
+# 2.1
+
+# Import the data set
+data <- read.csv2("prices1.csv")
+
+# Compute the mean price
+price_mean <- mean(data$Price)
+
+```
+
+
+
+```{r, fig.cap="\\label{fig:hist_price} A histogram of the distribution of Price.", out.width = "80%", fig.pos='!h', fig.align='center' }
+# Histogram of Price
+hist(data$Price, breaks = 20, col = "grey", xlab = "Price", main = "")
+
+```
+
+In Figure \ref{fig:hist_price}, we can observe that \texttt{Price} appears to be right-skewed, which reminds us of a Chi-squared distribution. The mean price of \texttt{Price} is computed to $1080.473$. 
 
 
 
 ### 2.
 
+In the previous task, we presented a histogram of the price and computed the mean price. Now we are interested in estimating the distribution of the mean price by using bootstrap. The package \texttt{boot} provides appropriate functions for this purpose. 
+
+The following approach is being used: Draw $B=2000$ bootstrap samples, i.e. resamples with replacement of size $n=110$, and then compute the statistic, that is, the mean. Then we can form a bootstrap distribution that approximates the sampling distribution of the mean statistic.
+
+```{r}
+# 2.2
+
+# Seed
+set.seed(123456789)
+
+# Function that returns the mean statistic, that will be bootstrapped.  
+# 1st argument: data set to bootstrap
+# 2nd argument: index vector of the data set
+mean_statistic <- function(d, i){
+  data <- d[i,] # use all observations
+  return(mean(data$Price)) 
+} 
+
+# Bootstrap
+price_boot <- boot(data, mean_statistic, R = 2000)
+
+# Mean of bootstrap samples
+
+boot_mean <- mean(price_boot$t)
+```
+
+
+```{r, fig.cap="\\label{fig:plot_boot} Left plot: A histogram of the bootstrap distribution that approximates the sampling distribution of the mean statistic denoted by $t^*$. The dotted vertical line indicates the original mean value of the price. Right plot: QQ-plot of the bootstrap samples.", out.width = "80%", fig.pos='!h', fig.align='center' }
+plot(price_boot)
+
+```
+
+
+```{r, fig.cap="\\label{fig:hist_boot} A histogram of the bootstrap distribution, with 2000 resamples, that approximates the sampling distribution of the mean statistic. The dotted vertical line indicates the original mean value of the price.", out.width = "80%", fig.pos='!h', fig.align='center' }
+# Histogram of the bootstrap distribution
+hist(price_boot$t[,1], main = "", xlab = "Mean statistic", col = 'grey', breaks = 20)
+abline(v = price_mean, col = "blue", lwd = 2, lty = 2) # Original mean price
+
+```
+
+
+(Choose one of the histograms?)
+
+The plot to the left in Figure \ref{fig:plot_boot} looks normally distributed. The right plot shows the QQ-plot of the bootstrap samples against standard normal quantiles, which follows a straight line, which also gives support for the distribution to be normal. The distribution of the mean price is estimated using bootstrap can be viewed in Figure \ref{fig:hist_boot}. From the histogram we can notice that the distribution looks normally distributed. 
+
+
+```{r, include=FALSE}
+# Compute bootstrap estimated bias
+bias <- boot_mean - price_mean
+
+# Compute bias-correction, alt 1
+price_mean - bias
+
+# Compute bias-correction, alt 2
+2*price_mean - boot_mean
+
+#estimated variance
+var(price_boot$t)
+```
+
+Further, we will determine the bootstrap bias–correction and the variance of the mean price. The bias-corrected estimate is computed to $1079.523$, by taking two times the original mean price minus the mean of the bootstrap sample. The bootstrap variance of the mean price equals $1349.957$. 
+
+Thereafter we wish to compute a 95% confidence interval for the mean price using bootstrap percentile, bootstrap BCa, and first–order normal approximation, which are presented in Table \ref{tab:ci}.
+
+```{r}
+# 95% confidence interval for the mean price, 
+#   using bootstrap percentile, bootstrap BCa, and first–order normal approximation
+ci_95 <- boot.ci(boot.out = price_boot, type = c("perc", "bca", "norm"))
+
+# CI and their length 
+ci_perc <- ci_95$perc[ , c(4, 5)]
+length_perc <- diff(ci_perc)
+
+ci_bca <- ci_95$bca[ , c(4, 5)]
+length_bca <- diff(ci_bca)
+
+
+ci_norm <- ci_95$normal[ , c(2, 3)]
+length_norm <- diff(ci_norm)
+```
+
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{| c| c | c| }
+\hline
+Type & $95\%$ CI & Length \\
+\hline
+percentile & $(1011.761, 1155.064) $ & $143.3033$ \\
+BCa & $(1015.582, 1158.401)$ & $142.8193$  \\
+normal approx. & $(1008.088, 1152.495) $ & $144.407$  \\
+\hline
+\end{tabular}
+\caption{\textit{The 95\% confidence interval for the mean price using bootstrap percentile, bootstrap BCa, and first–order normal approximation.}}
+\label{tab:ci}
+\end{table}
 
 
 
-### 3.
+### 3. 
+
+Now let us consider an alternative way, the jackknive, of estimating the variance of the mean price. The jackknife estimation uses the leave-one-out method, which means that one observation of \texttt{Price} is omitted at each iteration. Since our data set consists of $110$ observations, we will compute mean price of each sub-sample of size $109$. 
+
+```{r, include=FALSE}
+# Jackknife the mean
+jack <- c()
+for (i in seq_along(data$Price)){
+  jack[i] <- mean(data$Price[-i])
+}
+
+# Variance of mean price
+var(jack)
+
+```
+
+(Is this reasonable? Incorrect computations? But I try to explain the result anyway.)
+When estimating the variance of the mean price using the jackknife, we obtain a value of $12.23$. This estimation is much lower compared to the estimated variance of the mean price, $1357.127$, using bootstrap. 
+Thus, it is clear that there is a big difference between the obtained estimations. One explanation is that only one observation differs between each sub-sample, and therefore the mean of each sub-sample will have a small variation among all the mean prices. 
 
 
+### 4. 
+
+Lastly, we are going to compare the confidence intervals obtained with respect to their length and the location of the estimated mean in these intervals. In Table \ref{tab:ci}, we can see that the intervals differ slightly depending on which type is being used, but the length of the interval is more similar. To illustrate the difference we present a histogram of the bootstrap distribution with its corresponding confidence interval. 
+
+```{r, include=FALSE}
+# Median of CI
+sum(ci_perc)/2
+sum(ci_bca)/2
+sum(ci_norm)/2
+boot_mean
+```
 
 
-### 4.
+```{r, fig.cap="\\label{fig:hist_ci} A histogram of the bootstrap distribution, with 2000 resamples, that approximates the sampling distribution of the mean statistic, with its corresponding 95 percent confidence interval. The dotted vertical line indicates the estimated mean price. The blue, green and red vertical lines corresponds to the confidence interval using bootstrap percentile, bootstrap BCa and first-order normal approximation, respectively.", out.width = "80%", fig.pos='!h', fig.align='center' }
+hist(price_boot$t[,1], main = "", xlab = "Mean statistic", col = 'grey', breaks = 20)
+abline(v = boot_mean, lwd = 2, lty = 2) # estimated mean price
+abline(v = ci_perc, col = 'blue',lwd = 2) # percentile CI
+abline(v = ci_bca, col = 'green',lwd = 2) # BCa CI
+abline(v = ci_norm, col = 'red',lwd = 2) # normal approx CI
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
+The estimated mean is located around the center in these intervals. When we investigate the location even closer, the estimated mean is closest to the median of the interval using the first-order normal approximation, then comes the percentile, followed up by BCa. 
 
 
 
