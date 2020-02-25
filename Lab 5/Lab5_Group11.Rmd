@@ -30,13 +30,37 @@ library("boot")
 
 ### 1.
 
+```{r}
+# 1.1
 
+# Import the data set
+data <- read.csv2("lottery.csv")
 
+Y <- data$Draft_No
+X <- data$Day_of_year
+```
+
+```{r, fig.cap="\\label{fig:hist_ci} Scatterplot of Draft number versus Day of the year", out.width = "80%", fig.pos='!h', fig.align='center' }
+  
+plot(X, Y, xlab = "Day of the year", ylab = "Draft number")
+```
+
+The lottery looks random as there is no clear correlation between the variables.
 
 ### 2.
 
+```{r}
+Y_loess <- loess(Y~X, data = data)
+smoothed <- predict(Y_loess)
+```
 
+```{r, fig.cap="\\label{fig:hist_ci} Scatterplot of Smooth bla bla versus Day of the year", out.width = "80%", fig.pos='!h', fig.align='center' }
+  
+plot(X, Y, xlab = "Day of the year", ylab = "Smooth Draft number")
+lines(smoothed, x=X, col = "red")
+```
 
+It does not look as random as before. The days at he beggining of the year have on average larger draft number that those at the end of the year.
 
 ### 3.
 
