@@ -92,8 +92,13 @@ stat1 <- function(data, ind){
   T_test <- (smoothed[X_b] - smoothed[X_a])/(X_b - X_a)
   return(T_test)
 }
-res <- boot(data, stat1, R=2000) #make bootstrap
+res <- boot(data, stat1, R=100) #make bootstrap
 ```
+
+```{r}
+plot(res, index = 1)
+```
+
 
 
 ### 4.
