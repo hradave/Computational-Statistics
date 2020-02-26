@@ -19,7 +19,9 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
 
-```{r}
+```{r warning=FALSE}
+# R version
+RNGversion('3.5.1')
 # Packages
 library("boot")
 ```
@@ -50,9 +52,9 @@ The lottery looks random as there is no clear correlation between the variables.
 ### 2.
 
 ```{r}
-# 1.2
 
-Y_loess <- loess(Y~X, data = data)
+# 1.2
+Y_loess <- loess(Draft_No ~ Day_of_year,data = data)
 smoothed <- predict(Y_loess)
 ```
 
@@ -62,43 +64,47 @@ plot(X, Y, xlab = "Day of the year", ylab = "Smooth Draft number")
 lines(smoothed, x=X, col = "red")
 ```
 
-It does not look as random as before. The days at he beggining of the year have on average larger draft number that those at the end of the year.
+It does not look as random as before. The days at he beginning of the year have on average larger draft number that those at the end of the year.
 
 ### 3.
 
 ```{r}
+
 # 1.3
+Xb <- which.max(smoothed)
+Xa <- which.min(smoothed)
 
-X_a <- min(smoothed)
-X_b <- max(smoothed)
-
-T_test <- (smoothed[X_b] - smoothed[X_a])/(X_b - X_a)
+T_test <- (smoothed[Xb] - smoothed[Xa])/(Xb - Xa)
 T_test
 ```
 
 There should not be a trend in the data as the value is not significantly greater than 0.
 
 ```{r}
-library(boot)
-
 # computing bootstrap samples
 stat1 <- function(data, ind){
   data1 <- data[ind,]# extract bootstrap sample
-  Y <- data1$Draft_No
-  X <- data1$Day_of_year
-  Y_loess <- loess(Y~X, data = data1)
+  # Y <- data1$Draft_No
+  # X <- data1$Day_of_year
+  Y_loess <- loess(Draft_No ~ Day_of_year, data = data1)
   smoothed <- predict(Y_loess)
   
-  Xb <- which.max(unname(smoothed))
-  Xa <- which.min(unname(smoothed))
-  T_test <- (smoothed[X_b] - smoothed[X_a])/(X_b - X_a)
+  Xb <- which.max(smoothed)
+  Xa <- which.min(smoothed)
+  T_test <- (smoothed[Xb] - smoothed[Xa])/(Xb - Xa)
   return(T_test)
 }
-res <- boot(data, stat1, R=100) #make bootstrap
+# Seed
+set.seed(1234567890)
+res <- boot(data, stat1, R=2000) #make bootstrap
 ```
 
 ```{r}
 plot(res)
+```
+```{r}
+p_value <- sum(abs(res$t) >= abs(res$t0))/(res$R) # should it be (res$R + 1) 
+p_value # 0.9425
 ```
 
 
@@ -108,6 +114,9 @@ plot(res)
 ```{r}
 
 #1.4
+# Seed
+set.seed(1234567890)
+
 permutation <- function(data, B) {
   stat <- numeric(B)
   n <- length(data[,1])
@@ -135,7 +144,7 @@ t_test <- function(data) {
 permutation(data, 2000)
 ```
 
-The p-value is really small which means that the draw is random.
+The p-value is large.
 
 
 ### 5.
