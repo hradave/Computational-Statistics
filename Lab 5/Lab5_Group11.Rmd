@@ -121,7 +121,7 @@ permutation <- function(data, B) {
   stat <- numeric(B)
   n <- length(data[,1])
   for (b in 1:B) {
-    id <- sample(n)
+    id <- sample(n, replace = TRUE)
     Gb <- data[id,]
     stat[b] <- t_test(Gb)
   }
