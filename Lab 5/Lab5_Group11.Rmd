@@ -117,7 +117,7 @@ permutation <- function(data, B) {
     stat[b] <- t_test(Gb)
   }
   stat0 <- t_test(data)
-  return(mean(abs(stat)>abs(stat0))/B)
+  return(sum(abs(stat)>abs(stat0))/B)
 }
 
 t_test <- function(data) {
@@ -145,12 +145,34 @@ The p-value is really small which means that the draw is random.
 
 # a)
 
-Y_set <- 0.1*X+rnorm(366,183,100)
-Y_set[which(Y_set>366)] <- 366
-Y_set[which(Y_set<0)] <- 0
-dataset <- data.frame(X=X, Y=Y_set)
+create_dataset <- function(alpha) {
+  Y_set <- alpha*X+rnorm(366,183,100)
+  Y_set[which(Y_set>366)] <- 366
+  Y_set[which(Y_set<0)] <- 0
+  dataset <- data.frame(Day_of_year=X, Draft_No=Y_set)
+}
 
 ```
+
+```{r}
+# b)
+
+dataset <- create_dataset(alpha = 0.1)
+permutation(data = dataset, B = 200)
+```
+
+```{r}
+# c)
+
+alphas <- seq(from=0.2, to=10, by=0.1)
+p_values <- numeric(length(alphas))
+for (e in alphas) {
+  dataset <- create_dataset(alpha = e)
+  p_values[which(alphas==e)] <- permutation(data=dataset, B=200)
+}
+p_values
+```
+
 
 
 
