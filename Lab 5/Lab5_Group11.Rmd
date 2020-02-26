@@ -106,6 +106,8 @@ plot(res)
 ### 4.
 
 ```{r}
+
+#1.4
 permutation <- function(data, B) {
   stat <- numeric(B)
   n <- length(data[,1])
@@ -139,7 +141,14 @@ The p-value is really small which means that the draw is random.
 ### 5.
 
 ```{r}
+#1.5
 
+# a)
+
+Y_set <- 0.1*X+rnorm(366,183,100)
+Y_set[which(Y_set>366)] <- 366
+Y_set[which(Y_set<0)] <- 0
+dataset <- data.frame(X=X, Y=Y_set)
 
 ```
 
