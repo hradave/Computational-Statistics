@@ -154,8 +154,11 @@ The p-value is large.
 
 # a)
 
-create_dataset <- function(alpha) {
-  Y_set <- alpha*X+rnorm(366,183,100)
+create_dataset <- function(X, alpha) {
+  # Seed
+  set.seed(1234567890)
+  
+  Y_set <- alpha*X+rnorm(366,183,10)
   Y_set[which(Y_set>366)] <- 366
   Y_set[which(Y_set<0)] <- 0
   dataset <- data.frame(Day_of_year=X, Draft_No=Y_set)
@@ -164,9 +167,12 @@ create_dataset <- function(alpha) {
 ```
 
 ```{r}
-# b)
 
-dataset <- create_dataset(alpha = 0.1)
+# b)
+dataset <- create_dataset(X = X, alpha = 0.1)
+
+# Seed
+set.seed(1234567890)
 permutation(data = dataset, B = 200)
 ```
 
@@ -176,7 +182,7 @@ permutation(data = dataset, B = 200)
 alphas <- seq(from=0.2, to=10, by=0.1)
 p_values <- numeric(length(alphas))
 for (e in alphas) {
-  dataset <- create_dataset(alpha = e)
+  dataset <- create_dataset(X = X, alpha = e)
   p_values[which(alphas==e)] <- permutation(data=dataset, B=200)
 }
 p_values
