@@ -42,7 +42,7 @@ Y <- data$Draft_No
 X <- data$Day_of_year
 ```
 
-```{r, fig.cap="\\label{fig:hist_ci} Scatterplot of Draft number versus Day of the year", out.width = "80%", fig.pos='!h', fig.align='center' }
+```{r, fig.cap="\\label{fig:scatter1} Scatterplot of Draft number versus Day of the year", out.width = "80%", fig.pos='!h', fig.align='center' }
   
 plot(X, Y, xlab = "Day of the year", ylab = "Draft number")
 ```
@@ -58,7 +58,7 @@ Y_loess <- loess(Draft_No ~ Day_of_year,data = data)
 smoothed <- predict(Y_loess)
 ```
 
-```{r, fig.cap="\\label{fig:hist_ci} Scatterplot of Smooth bla bla versus Day of the year", out.width = "80%", fig.pos='!h', fig.align='center' }
+```{r, fig.cap="\\label{fig:scatter2} Scatterplot of Smooth Darft number versus Day of the year", out.width = "80%", fig.pos='!h', fig.align='center' }
   
 plot(X, Y, xlab = "Day of the year", ylab = "Smooth Draft number")
 lines(smoothed, x=X, col = "red")
@@ -114,10 +114,11 @@ p_value # 0.9425
 ```{r}
 
 #1.4
-# Seed
-set.seed(1234567890)
 
 permutation <- function(data, B) {
+  # Seed
+  set.seed(1234567890)
+  
   stat <- numeric(B)
   n <- length(data[,1])
   for (b in 1:B) {
@@ -171,8 +172,6 @@ create_dataset <- function(X, alpha) {
 # b)
 dataset <- create_dataset(X = X, alpha = 0.1)
 
-# Seed
-set.seed(1234567890)
 permutation(data = dataset, B = 200)
 ```
 
