@@ -84,11 +84,13 @@ library(boot)
 # computing bootstrap samples
 stat1 <- function(data, ind){
   data1 <- data[ind,]# extract bootstrap sample
+  Y <- data1$Draft_No
+  X <- data1$Day_of_year
   Y_loess <- loess(Y~X, data = data1)
   smoothed <- predict(Y_loess)
   
-  X_a <- min(smoothed)
-  X_b <- max(smoothed)
+  Xb <- which.max(unname(smoothed))
+  Xa <- which.min(unname(smoothed))
   T_test <- (smoothed[X_b] - smoothed[X_a])/(X_b - X_a)
   return(T_test)
 }
@@ -96,14 +98,42 @@ res <- boot(data, stat1, R=100) #make bootstrap
 ```
 
 ```{r}
-plot(res, index = 1)
+plot(res)
 ```
 
 
 
 ### 4.
 
+```{r}
+permutation <- function(data, B) {
+  stat <- numeric(B)
+  n <- length(data[,1])
+  for (b in 1:B) {
+    id <- sample(n)
+    Gb <- data[id,]
+    stat[b] <- t_test(Gb)
+  }
+  stat0 <- t_test(data)
+  return(mean(abs(stat)>abs(stat0))/B)
+}
 
+t_test <- function(data) {
+  loess <- loess(Draft_No ~ Day_of_year,data = data)
+  Y_hat <- predict(loess, data)
+  
+  Xb <- which.max(unname(Y_hat))
+  Xa <- which.min(unname(Y_hat))
+  
+  t_stat <- (unname(Y_hat[Xb]) - unname(Y_hat[Xa])) / (Xb - Xa)
+  
+  return(t_stat)
+}
+
+permutation(data, 2000)
+```
+
+The p-value is really small which means that the draw is random.
 
 
 ### 5.
