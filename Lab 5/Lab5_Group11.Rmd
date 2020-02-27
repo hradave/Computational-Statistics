@@ -155,14 +155,9 @@ The p-value is large.
 
 # a)
 
-<<<<<<< HEAD
-create_dataset <- function(alpha) {
-=======
 create_dataset <- function(X, alpha) {
   # Seed
   set.seed(1234567890)
-  
->>>>>>> 0a6624c27352079754deef37cd2b6be06b13ac3b
   Y_set <- alpha*X+rnorm(366,183,10)
   Y_set[which(Y_set>366)] <- 366
   Y_set[which(Y_set<0)] <- 0
