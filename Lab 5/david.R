@@ -40,8 +40,11 @@ set.seed(1234567890)
 res <- boot(data, stat, R = 2000)
 plot(res)
 
-p_value <- sum(abs(res$t) >= abs(res$t0))/(res$R) # should it be (res$R + 1) 
+p_value <- mean(abs(res$t) >= abs(res$t0))
 p_value # 0.9425
+
+#The p-value is the probability of getting something more extreme than what we observed. 
+
 # 4
 
 

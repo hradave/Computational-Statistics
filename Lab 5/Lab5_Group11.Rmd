@@ -329,9 +329,11 @@ normal approx. & $(1008.088, 1152.495) $ & $144.407$  \\
 
 ### 3. 
 
-Now let us consider an alternative way, the jackknive, of estimating the variance of the mean price. The jackknife estimation uses the leave-one-out method, which means that one observation of \texttt{Price} is omitted at each iteration. Since our data set consists of $110$ observations, we will compute mean price of each sub-sample of size $109$. 
+Now let us consider an alternative way, the jackknife, of estimating the variance of the mean price. The jackknife estimation uses the leave-one-out method, which means that one observation of \texttt{Price} is omitted at each iteration. Since our data set consists of $110$ observations, we will compute mean price of each sub-sample of size $109$. 
 
 ```{r, include=FALSE}
+
+# 2.3
 # Jackknife the mean
 jack <- c()
 for (i in seq_along(data$Price)){
