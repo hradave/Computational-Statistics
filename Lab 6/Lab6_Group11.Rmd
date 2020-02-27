@@ -1,0 +1,95 @@
+---
+title: '732A90: Computational Statistics'
+author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+    includes:
+      in_header: my_header.tex
+  html_document:
+    df_print: paged
+subtitle: Computer lab6 - Group11
+header-includes: \usepackage{float}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Question 1: Genetic algorithm
+
+
+### 1.
+
+
+
+
+### 2.
+
+
+
+
+### 3.
+
+
+
+
+### 4.
+
+
+
+
+### 5.
+
+
+
+
+
+
+# Question 2: EM algorithm
+
+
+### 1.
+
+
+
+
+
+### 2.
+
+
+
+
+
+### 3.
+
+
+
+
+
+### 4.
+
+
+
+
+
+
+
+
+```{r warning=FALSE}
+# R version
+RNGversion('3.5.1')
+# Packages
+
+```
+
+
+
+----------
+
+# Appendix
+
+```{r ref.label=knitr::all_labels(),echo=TRUE,eval=FALSE}
+
+```
