@@ -155,7 +155,7 @@ The p-value is large.
 # a)
 
 create_dataset <- function(alpha) {
-  Y_set <- alpha*X+rnorm(366,183,100)
+  Y_set <- alpha*X+rnorm(366,183,10)
   Y_set[which(Y_set>366)] <- 366
   Y_set[which(Y_set<0)] <- 0
   dataset <- data.frame(Day_of_year=X, Draft_No=Y_set)
@@ -203,7 +203,6 @@ First, we plot a histogram of the variable \texttt{Price}, to get an idea of its
 
 # Import the data set
 data <- read.csv2("prices1.csv")
-
 # Compute the mean price
 price_mean <- mean(data$Price)
 
