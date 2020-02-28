@@ -113,17 +113,18 @@ p_value # 0.9425
 ```{r}
 
 #1.4
-
 t_test <- function(data) {
   data2<-data
   loess <- loess(Draft_No ~ Day_of_year,data = data2)
   Y_hat <- predict(loess)
-  
+  #Y_hat <- sort(cbind(Y_hat, data2$id_col)[,2])
   Xb <- which.max(Y_hat)
   Xa <- which.min(Y_hat)
   
   t_stat <- (Y_hat[Xb] - Y_hat[Xa]) / (data2$Day_of_year[Xb] - data2$Day_of_year[Xa])
-  
+  plot(data2$Day_of_year, data2$Draft_No, xlab = "Day of the year", ylab = "Smooth Draft number")
+  points(Y_hat, col = "red", type = "l")
+  #lines(Y_hat, x=data2$Day_of_year, col = "red")
   return(t_stat)
 }
 
@@ -135,13 +136,14 @@ permutation <- function(data, B) {
   n <- length(data[,1])
   for (b in 1:B) {
     id <- sample(n)
-    Gb <- data[id,]
+    Gb <- data[id,] 
+    Gb$Day_of_year <- seq(1,366) # modified by David
     stat[b] <- t_test(Gb)
   }
   stat0 <- t_test(data)
   hist(stat)
-  print(stat[1000:2000])
-  return(sum(stat >= 0)/B)
+  print(stat)
+  return(sum(stat <= 0)/B)
 }
 
 
