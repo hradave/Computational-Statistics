@@ -253,11 +253,6 @@ boot_mean <- mean(price_boot$t)
 ```
 
 
-```{r, fig.cap="\\label{fig:plot_boot} Left plot: A histogram of the bootstrap distribution that approximates the sampling distribution of the mean statistic denoted by $t^*$. The dotted vertical line indicates the original mean value of the price. Right plot: QQ-plot of the bootstrap samples.", out.width = "80%", fig.pos='!h', fig.align='center' }
-plot(price_boot)
-
-```
-
 
 ```{r, fig.cap="\\label{fig:hist_boot} A histogram of the bootstrap distribution, with 2000 resamples, that approximates the sampling distribution of the mean statistic. The dotted vertical line indicates the original mean value of the price.", out.width = "80%", fig.pos='!h', fig.align='center' }
 # Histogram of the bootstrap distribution
@@ -267,9 +262,7 @@ abline(v = price_mean, col = "blue", lwd = 2, lty = 2) # Original mean price
 ```
 
 
-(Choose one of the histograms?)
-
-The plot to the left in Figure \ref{fig:plot_boot} looks normally distributed. The right plot shows the QQ-plot of the bootstrap samples against standard normal quantiles, which follows a straight line, which also gives support for the distribution to be normal. The distribution of the mean price is estimated using bootstrap can be viewed in Figure \ref{fig:hist_boot}. From the histogram we can notice that the distribution looks normally distributed. 
+The distribution of the mean price is estimated using bootstrap can be viewed in Figure \ref{fig:hist_boot}. From the histogram we can notice that the distribution looks normally distributed. 
 
 
 ```{r, include=FALSE}
@@ -286,7 +279,7 @@ price_mean - bias
 var(price_boot$t)
 ```
 
-Further, we will determine the bootstrap bias–correction and the variance of the mean price. The bias-corrected estimate is computed to $1079.523$, by taking two times the original mean price minus the mean of the bootstrap sample. The bootstrap variance of the mean price equals $1349.957$. 
+Further, we will determine the bootstrap bias–correction and the variance of the mean price. The bias-corrected estimate is computed to $1079.487$, by taking two times the original mean price minus the mean of the bootstrap sample. The bootstrap variance of the mean price equals $1259.701$. 
 
 Thereafter we wish to compute a 95% confidence interval for the mean price using bootstrap percentile, bootstrap BCa, and first–order normal approximation, which are presented in Table \ref{tab:ci}.
 
@@ -314,9 +307,9 @@ length_norm <- diff(ci_norm)
 \hline
 Type & $95\%$ CI & Length \\
 \hline
-percentile & $(1011.761, 1155.064) $ & $143.3033$ \\
-BCa & $(1015.582, 1158.401)$ & $142.8193$  \\
-normal approx. & $(1008.088, 1152.495) $ & $144.407$  \\
+percentile & $(1013.583, 1154.444) $ & $140.8611$ \\
+BCa & $(1015.234, 1156.600)$ & $141.3656$  \\
+normal approx. & $(1009.923, 1149.050) $ & $139.1272$  \\
 \hline
 \end{tabular}
 \caption{\textit{The 95\% confidence interval for the mean price using bootstrap percentile, bootstrap BCa, and first–order normal approximation.}}
@@ -343,8 +336,8 @@ var(jack)
 
 ```
 
-(Is this reasonable? Incorrect computations? But I try to explain the result anyway.)
-When estimating the variance of the mean price using the jackknife, we obtain a value of $12.23$. This estimation is much lower compared to the estimated variance of the mean price, $1357.127$, using bootstrap. 
+
+When estimating the variance of the mean price using the jackknife, we obtain a value of $12.23$. This estimation is much lower compared to the estimated variance of the mean price, $1259.701$, using bootstrap. 
 Thus, it is clear that there is a big difference between the obtained estimations. One explanation is that only one observation differs between each sub-sample, and therefore the mean of each sub-sample will have a small variation among all the mean prices. 
 
 
