@@ -77,8 +77,7 @@ Xa <- which.min(smoothed)
 T_test <- (smoothed[Xb] - smoothed[Xa])/(Xb - Xa)
 T_test
 ```
-
-There should not be a trend in the data as the value is not significantly greater than 0.
+NUll hypotheses: random -> t = 0
 
 ```{r}
 # computing bootstrap samples
@@ -91,7 +90,7 @@ stat1 <- function(data, ind){
   
   Xb <- which.max(smoothed)
   Xa <- which.min(smoothed)
-  T_test <- (smoothed[Xb] - smoothed[Xa])/(Xb - Xa)
+  T_test <- (smoothed[Xb] - smoothed[Xa])/(data1$Day_of_year[Xb] - data1$Day_of_year[Xa])
   return(T_test)
 }
 # Seed
@@ -103,7 +102,7 @@ res <- boot(data, stat1, R=2000) #make bootstrap
 plot(res)
 ```
 ```{r}
-p_value <- sum(abs(res$t) >= abs(res$t0))/(res$R) # should it be (res$R + 1) 
+p_value <- sum(res$t >= 0)/(res$R) # should it be (res$R + 1) 
 p_value # 0.9425
 ```
 
@@ -114,6 +113,19 @@ p_value # 0.9425
 ```{r}
 
 #1.4
+
+t_test <- function(data) {
+  data2<-data
+  loess <- loess(Draft_No ~ Day_of_year,data = data2)
+  Y_hat <- predict(loess)
+  
+  Xb <- which.max(Y_hat)
+  Xa <- which.min(Y_hat)
+  
+  t_stat <- (Y_hat[Xb] - Y_hat[Xa]) / (data2$Day_of_year[Xb] - data2$Day_of_year[Xa])
+  
+  return(t_stat)
+}
 
 permutation <- function(data, B) {
   # Seed
@@ -127,25 +139,18 @@ permutation <- function(data, B) {
     stat[b] <- t_test(Gb)
   }
   stat0 <- t_test(data)
-  return(sum(abs(stat)>abs(stat0))/B)
+  hist(stat)
+  print(stat[1000:2000])
+  return(sum(stat >= 0)/B)
 }
 
-t_test <- function(data) {
-  loess <- loess(Draft_No ~ Day_of_year,data = data)
-  Y_hat <- predict(loess, data)
-  
-  Xb <- which.max(unname(Y_hat))
-  Xa <- which.min(unname(Y_hat))
-  
-  t_stat <- (unname(Y_hat[Xb]) - unname(Y_hat[Xa])) / (Xb - Xa)
-  
-  return(t_stat)
-}
+
 
 permutation(data, 2000)
 ```
 
-The p-value is large.
+We should reject 95-100%.
+Power should be 1.
 
 
 ### 5.

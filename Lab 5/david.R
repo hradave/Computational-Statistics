@@ -23,9 +23,7 @@ Xa <- strtoi(names(which(Y_hat == min(Y_hat))))
 
 
 stat <- function(data, vn) {
-  data_bs <- data[vn,]
-  loess <- loess(Draft_No ~ Day_of_year,data = data_bs)
-  Y_hat <- predict(loess, data_bs)
+  Y_hat = Y_hat[,vn]
   
   Xb <- which.max(unname(Y_hat))
   Xa <- which.min(unname(Y_hat))
