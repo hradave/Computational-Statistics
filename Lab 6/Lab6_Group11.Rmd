@@ -17,6 +17,11 @@ header-includes: \usepackage{float}
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
+```{r warning = FALSE}
+# R version
+RNGversion('3.5.1')
+```
+
 # Question 1: Genetic algorithm
 
 
