@@ -70,16 +70,74 @@ mutate <- function(x){
 ### 4.
 
 
-Further, we will create a function called \texttt{genetic()}, with the parameters \texttt{maxiter} and \texttt{mutprob}. The settings of this function as well as the results are presented in (a)-(e). The code can be found in the Appendix.
+Further, we will create a function called \texttt{genetic()}, with the parameters \texttt{maxiter} and \texttt{mutprob}. The settings of this \texttt{genetic()} function, as well as its output results, are presented in (a)-(e). The code can be found in the Appendix.
 
 
 (a). The function $f()$ is plotted in the range from 0 to 30 in Figure X, and we can observe that there is a maximum value at ...
 
-(b)
+(b). An initial population for the genetic algorithm is defined as $X = (0, 5, 10, 15,... ,30)$.
+
+(c). A vector called \texttt{Values} are computed, containing the function values for each population point.
+
+
+(d). The \texttt{genetic()} function performs \texttt{maxiter} iterations. For each iteration...
+
+(e).
+
+```{r}
+#4
+genetic <- function(maxiter, mutprob){
+  #a
+  plot(x = seq(0,30), y = f(seq(0,30)), type = "l", xlab = "x", ylab = "f(x)")
+  abline(v=1.05, col = "red")
+  
+  #b
+  X = seq(0,30,5)
+  
+  #c
+  Values = f(X)
+  
+  #d
+  #set seed
+  set.seed(1234567890)
+  for (i in 1:maxiter) {
+    #i
+    parents = match(sample(X, 2),X)
+    
+    #ii
+    victim = order(Values)[1]
+    
+    #iii
+    kid = round(crossover(parents[1],parents[2]))
+    p = runif(1)
+    if (p < mutprob) {
+      kid = mutate(kid)
+    }
+    
+    #iv
+    X[victim] = kid
+    Values = f(X)
+    
+    #v
+    max = max(Values)
+  }
+  
+  #e
+  print(X)
+  print(Values)
+  plot(x = seq(0,30), y = f(seq(0,30)), type = "l", xlab = "x", ylab = "f(x)")
+  points(x = X, y = Values, col = "red", pch = 19)
+}
+
+```
+
+
+
 
 
 ### 5.
 
+By using the defined functions from previous tasks (1.1-1.4), we are going to observe the initial population and final population. This is done by running the code with different combinations of \texttt{maxiter}$= 10, 100$ and \texttt{mutprob}$= 0.1, 0.5, 0.9$.
 
 
 
