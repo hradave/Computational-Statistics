@@ -32,7 +32,7 @@ library("boot")
 
 ### 1.
 
-The aim of this task is to investigate wether or not a lottery is random. In this lottery every day of the year \texttt{X} is given a draft number \texttt{Y}. The first approach is to make a scatter plot of \texttt{Y} versus \texttt{X} to see if these variables look correlated.
+The aim of this task is to investigate whether or not a lottery is random. In this lottery, every day of the year \texttt{X} is given a draft number \texttt{Y}. The first approach is to make a scatter plot of \texttt{Y} versus \texttt{X} to see if these variables look correlated.
 
 ```{r}
 # 1.1
@@ -49,7 +49,7 @@ X <- data$Day_of_year
 plot(X, Y, xlab = "Day of the year", ylab = "Draft number")
 ```
 
-The lottery looks random as there is no clear correlation between the variables.
+The lottery looks random as there is no clear correlation between the variables in Figure \ref{fig:scatter1}.
 
 ### 2.
 
@@ -61,17 +61,17 @@ Y_loess <- loess(Draft_No ~ Day_of_year,data = data)
 smoothed <- predict(Y_loess)
 ```
 
-```{r, fig.cap="\\label{fig:scatter2} Scatterplot of Smooth Darft number versus Day of the year", out.width = "80%", fig.pos='!h', fig.align='center' }
+```{r, fig.cap="\\label{fig:scatter2} Scatterplot of Smooth Draft number versus Day of the year", out.width = "80%", fig.pos='!h', fig.align='center' }
   
 plot(X, Y, xlab = "Day of the year", ylab = "Smooth Draft number")
 lines(smoothed, x=X, col = "red")
 ```
 
-It does not look as random as before. The days at he beginning of the year have on average larger draft number that those at the end of the year.
+In \ref{fig:scatter2}, the red smoothed line give an indication that the lottery does not look as random as before. The days at the beginning of the year have on average larger draft number that those at the end of the year.
 
 ### 3.
 
-We can use a test statistic to conclude whether the test is random or not. We therefore use a non-parametric bootstrap with B=2000 bootsraps and compute the p-value of the test. The code can be found in the Appendix. 
+We can use a test statistic to conclude whether the test is random or not. We therefore use a non-parametric bootstrap with $B=2000$ bootstraps and compute the p-value of the test. The code can be found in the Appendix. 
 
 ```{r}
 
@@ -87,11 +87,8 @@ T_test <- (smoothed[Xb] - smoothed[Xa])/(Xb - Xa)
 # computing bootstrap samples
 stat1 <- function(data, ind){
   data1 <- data[ind,]# extract bootstrap sample
-  # Y <- data1$Draft_No
-  # X <- data1$Day_of_year
   Y_loess <- loess(Draft_No ~ Day_of_year, data = data1)
   smoothed <- predict(Y_loess)
-  
   Xb <- which.max(smoothed)
   Xa <- which.min(smoothed)
   T_test <- (smoothed[Xb] - smoothed[Xa])/(data1$Day_of_year[Xb] - data1$Day_of_year[Xa])
@@ -102,18 +99,18 @@ set.seed(1234567890)
 res <- boot(data, stat1, R=2000) #make bootstrap
 ```
 
-Once performed the bootstrap, we can plot the result on an histogram to check if the statistic comes from a certain distribution. Also a normality test is performed and a Q-Q plot is given in \ref{fig:bootstrap}. 
+Once performed the bootstrap, we can plot the result on an histogram to check if the statistic comes from a certain distribution. Also a normality test is performed and a Q-Q plot is given in Figure \ref{fig:bootstrap}. 
+
 ```{r, fig.cap="\\label{fig:bootstrap} Histogram and Q-Q plot of the bootstrap", out.width = "80%", fig.pos='!h', fig.align='center' }
 plot(res)
 ```
 
-In \ref{fig:bootstrap} we can see that the distribution is centered at $-0.348$ and reminds of a normal distribution. The Q-Q plot confirms it. 
+In Figure \ref{fig:bootstrap} we can see that the distribution is centered at $-0.348$ and reminds of a normal distribution. The Q-Q plot confirms it. 
 
 Finally, the p-value of the test is $5e-04$. This p-value is very small, therefore we can not reject the null hypothesis.
 
 ```{r}
-p_value <- sum(res$t >= 0)/(res$R) # should it be (res$R + 1) 
-#p_value # 0.9425
+p_value <- sum(res$t >= 0)/(res$R) 
 ```
 
 
@@ -126,7 +123,7 @@ H_{0}: Lottery\quad is\quad random \\
 H_{1}: Lottery \quad is\quad non-random
 $$
 
-we use permutation test with statistc T, and return the p-value to decide the randomness of the draw. The code can be found in the Appendix. 
+we use permutation test with statistic T, and return the p-value to decide the randomness of the draw. The code can be found in the Appendix. 
 
 ```{r}
 
