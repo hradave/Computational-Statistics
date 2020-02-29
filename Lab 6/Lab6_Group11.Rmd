@@ -24,25 +24,58 @@ RNGversion('3.5.1')
 
 # Question 1: Genetic algorithm
 
+In this exercise we are going to perform one-dimensional maximization by using a genetic algorithm.
 
 ### 1.
 
+Firstly, we define the function \texttt{f()} as
 
+$$
+f(x):= \frac{x^2}{e^x} -2 \ \text{exp} (-(9\text{sin } x)/(x^2+x+1)). 
+$$
+
+```{r}
+#1.1
+f <- function(x){
+  return(x^2/exp(x) - 2*exp(-1*(9*sin(x)) / (x^2 + x + 1)))
+}
+
+```
 
 
 ### 2.
 
+Secondly, we define the function \texttt{crossover()}, that takes two scalars $x$ and $y$ as inputs, and returns a child as $\frac{x+y}{2}$.
 
+```{r}
+#1.2
+crossover <- function(x,y){
+  return((x+y) / 2)
+}
 
+```
 
 ### 3.
 
+Thirdly, we define the function \texttt{mutate()}, that performs the integer division $x^2 \text{  mod } 30$, for a scalar input $x$. 
 
+```{r}
+#1.3
+mutate <- function(x){
+  return(x^2 %% 30)
+}
+```
 
 
 ### 4.
 
 
+Further, we will create a function called \texttt{genetic()}, with the parameters \texttt{maxiter} and \texttt{mutprob}. The settings of this function as well as the results are presented in (a)-(e). The code can be found in the Appendix.
+
+
+(a). The function $f()$ is plotted in the range from 0 to 30 in Figure X, and we can observe that there is a maximum value at ...
+
+(b)
 
 
 ### 5.
