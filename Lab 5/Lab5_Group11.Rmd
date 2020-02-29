@@ -159,15 +159,15 @@ permutation <- function(data, B) {
     stat[b] <- t_test(Gb)
   }
   stat0 <- t_test(data)
-  return(sum(stat <= 0)/B)
+  return(sum(stat <= stat0)/B)
 }
 
 
 
-p_value_permutation <- permutation(data, 2000) #0.5195
+p_value_permutation <- permutation(data, 2000) #0.0775
 ```
 
-The p-value of the permutation test is $0.5195$. This p-value is very large and we can reject the null hypothesis. The draw is not random.
+The p-value of the permutation test is $0.0775$. This p-value is large and we can reject the null hypothesis. The draw is not random.
 
 
 ### 5.
@@ -190,7 +190,7 @@ create_dataset <- function(X, alpha) {
 
 ```
 
-We now use the new dataset to run the previous test, and return the p-value of the test. The p-value given is $0.475$, again we can reject the Null hypothesis, therefore using this data, the draw is not random. 
+We now use the new dataset to run the previous test, and return the p-value of the test. The p-value of the power test is $1$, this means that the test used never rejects the Null hypothesis when is actually true. The error type 2 is $0$. 
 
 ```{r}
 
@@ -214,7 +214,7 @@ for (e in alphas) {
 p_values
 ```
 
-We can see that the p-values are between 0.42 and 0.495, we rejectthe Null hypothesis for all the $\alpha $. 
+We can see that the p-values are all $1$. For all $\alpha$ the test never commits the Type 2 error, which means that the test never rejects the Null hypothesis when this one is true.  
 
 
 
