@@ -73,7 +73,7 @@ mutate <- function(x){
 Further, we will create a function called \texttt{genetic()}, with the parameters \texttt{maxiter} and \texttt{mutprob}. The settings of this \texttt{genetic()} function, as well as its output results, are presented in (a)-(e). The code can be found in the Appendix.
 
 
-(a). The function $f()$ is plotted in the range from 0 to 30 in Figure X, and we can observe that there is a maximum value at ...
+(a). The function $f()$ is plotted in the range from 0 to 30 in Figure X, and we can observe that there is a maximum value located around $x=1.2$.
 
 (b). An initial population for the genetic algorithm is defined as $X = (0, 5, 10, 15,... ,30)$.
 
@@ -86,10 +86,11 @@ Further, we will create a function called \texttt{genetic()}, with the parameter
 
 ```{r}
 #4
+#4
 genetic <- function(maxiter, mutprob){
   #a
-  plot(x = seq(0,30), y = f(seq(0,30)), type = "l", xlab = "x", ylab = "f(x)")
-  abline(v=1.05, col = "red")
+  plot(x = seq(0,30,0.1), y = f(seq(0,30,0.1)), type = "l", xlab = "x", ylab = "f(x)")
+  abline(v=seq(0,30,0.1)[which.max(f(seq(0,30,0.1)))], col="red" )
   
   #b
   X = seq(0,30,5)
@@ -125,9 +126,10 @@ genetic <- function(maxiter, mutprob){
   #e
   print(X)
   print(Values)
-  plot(x = seq(0,30), y = f(seq(0,30)), type = "l", xlab = "x", ylab = "f(x)")
+  plot(x = seq(0,30,0.1), y = f(seq(0,30,0.1)), type = "l", xlab = "x", ylab = "f(x)")
   points(x = X, y = Values, col = "red", pch = 19)
 }
+
 
 ```
 
@@ -140,6 +142,10 @@ genetic <- function(maxiter, mutprob){
 By using the defined functions from previous tasks (1.1-1.4), we are going to observe the initial population and final population. This is done by running the code with different combinations of \texttt{maxiter}$= 10, 100$ and \texttt{mutprob}$= 0.1, 0.5, 0.9$.
 
 
+```{r}
+# Just testing no change, i.e. initial population
+genetic(1,0)
+```
 
 
 
