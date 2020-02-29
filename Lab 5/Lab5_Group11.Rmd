@@ -32,6 +32,8 @@ library("boot")
 
 ### 1.
 
+The aim of this task is to investigate wether or not a lottery is random. In this lottery every day of the year \texttt{X} is given a draft number \texttt{Y}. The first approach is to make a scatter plot of \texttt{Y} versus \texttt{X} to see if these variables look correlated.
+
 ```{r}
 # 1.1
 
@@ -51,6 +53,7 @@ The lottery looks random as there is no clear correlation between the variables.
 
 ### 2.
 
+Using a loess smoother we can compute an estimate of \texttt{Y} as a function of \texttt{X} and plot the result. Therefore, we can state wheter the lottery still looks random. 
 ```{r}
 
 # 1.2
@@ -68,6 +71,8 @@ It does not look as random as before. The days at he beginning of the year have 
 
 ### 3.
 
+We can use a test statistic to conclude whether the test is random or not. We therefore use a non-parametric bootstrap with B=2000 bootsraps and compute the p-value of the test. The code can be found in the Appendix. 
+
 ```{r}
 
 # 1.3
@@ -75,9 +80,8 @@ Xb <- which.max(smoothed)
 Xa <- which.min(smoothed)
 
 T_test <- (smoothed[Xb] - smoothed[Xa])/(Xb - Xa)
-T_test
 ```
-NUll hypotheses: random -> t = 0
+
 
 ```{r}
 # computing bootstrap samples
@@ -98,17 +102,31 @@ set.seed(1234567890)
 res <- boot(data, stat1, R=2000) #make bootstrap
 ```
 
-```{r}
+Once performed the bootstrap, we can plot the result on an histogram to check if the statistic comes from a certain distribution. Also a normality test is performed and a Q-Q plot is given in \ref{fig:bootstrap}. 
+```{r, fig.cap="\\label{fig:bootstrap} Histogram and Q-Q plot of the bootstrap", out.width = "80%", fig.pos='!h', fig.align='center' }
 plot(res)
 ```
+
+In \ref{fig:bootstrap} we can see that the distribution is centered at $-0.348$ and reminds of a normal distribution. The Q-Q plot confirms it. 
+
+Finally, the p-value of the test is $5e-04$. This p-value is very small, therefore we can not reject the null hypothesis.
+
 ```{r}
 p_value <- sum(res$t >= 0)/(res$R) # should it be (res$R + 1) 
-p_value # 0.9425
+#p_value # 0.9425
 ```
 
 
 
 ### 4.
+
+In order to test the hypothesis,
+$$
+H_{0}: Lottery\quad is\quad random \\
+H_{1}: Lottery \quad is\quad non-random
+$$
+
+we use permutation test with statistc T, and return the p-value to decide the randomness of the draw. The code can be found in the Appendix. 
 
 ```{r}
 
@@ -122,8 +140,8 @@ t_test <- function(data) {
   Xa <- which.min(Y_hat)
   
   t_stat <- (Y_hat[Xb] - Y_hat[Xa]) / (data2$Day_of_year[Xb] - data2$Day_of_year[Xa])
-  plot(data2$Day_of_year, data2$Draft_No, xlab = "Day of the year", ylab = "Smooth Draft number")
-  points(Y_hat, col = "red", type = "l")
+  #plot(data2$Day_of_year, data2$Draft_No, xlab = "Day of the year", ylab = "Smooth Draft number")
+  #points(Y_hat, col = "red", type = "l")
   #lines(Y_hat, x=data2$Day_of_year, col = "red")
   return(t_stat)
 }
@@ -141,21 +159,20 @@ permutation <- function(data, B) {
     stat[b] <- t_test(Gb)
   }
   stat0 <- t_test(data)
-  hist(stat)
-  print(stat)
   return(sum(stat <= 0)/B)
 }
 
 
 
-permutation(data, 2000)
+p_value_permutation <- permutation(data, 2000) #0.5195
 ```
 
-We should reject 95-100%.
-Power should be 1.
+The p-value of the permutation test is $0.5195$. This p-value is very large and we can reject the null hypothesis. The draw is not random.
 
 
 ### 5.
+
+We want to estimate the power of the previous test. To do so we generate a new dataset using the same \texttt{X} as in the original dataset and \texttt{Y} follows the equation $Y(X)=max(0,min(\alpha x + \beta , 366))$, where $\alpha=0.1$ and $\beta \sim N(183,sd=10)$. The code can be found in the Appendix.
 
 ```{r}
 #1.5
@@ -173,13 +190,17 @@ create_dataset <- function(X, alpha) {
 
 ```
 
+We now use the new dataset to run the previous test, and return the p-value of the test. The p-value given is $0.475$, again we can reject the Null hypothesis, therefore using this data, the draw is not random. 
+
 ```{r}
 
 # b)
 dataset <- create_dataset(X = X, alpha = 0.1)
 
-permutation(data = dataset, B = 200)
+p_value_powertest <- permutation(data = dataset, B = 200) #0.475
 ```
+
+Finally we repeat the previous test but for $\alpha=0.2,0.3,...,10$ and return the p-values of each test. The p-values are the following:
 
 ```{r}
 # c)
@@ -193,7 +214,7 @@ for (e in alphas) {
 p_values
 ```
 
-
+We can see that the p-values are between 0.42 and 0.495, we rejectthe Null hypothesis for all the $\alpha $. 
 
 
 
