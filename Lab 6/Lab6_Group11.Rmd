@@ -20,6 +20,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ```{r warning = FALSE}
 # R version
 RNGversion('3.5.1')
+library("ggplot2")
 ```
 
 # Question 1: Genetic algorithm
@@ -149,11 +150,40 @@ genetic(1,0)
 
 
 
+
 # Question 2: EM algorithm
 
+The purpose with this exercise is to implement the EM algorithm. For this, we are given the data file \texttt{physical1.csv}, containing a behavior of two related physical processes $Y = Y(X)$ and $Z = Z(X)$.
 
 ### 1.
 
+The first step is to examine the data set \texttt{physical1.csv}, to see if the two processes are related to each other. 
+
+```{r}
+# 1.1 
+physical <- read.csv2("physical1.csv", sep = ",")
+
+X <- as.numeric(as.character(physical$X))
+Y <- as.numeric(as.character(physical$Y))
+Z <- as.numeric(as.character(physical$Z))
+
+data <- data.frame(X = c(X,X), value = c(Y,Z), Process= rep(c("Y","Z"), each= 100))
+
+# var(Z,na.rm = TRUE)
+# var(Y,na.rm = TRUE)
+
+```
+
+```{r, fig.cap="\\label{fig:timeseries} Time series plot of the dependence of Z and Y versus X.", out.width = "80%", fig.pos='!h', fig.align='center'}
+# Time series plot 
+ggplot(data = data, aes(x = X, y = value, col = Process)) + 
+  geom_line() + 
+  ylab("Physical process") + 
+  theme_bw()
+
+```
+
+In Figure \ref{fig:timeseries} it seems that the two processes are related to each other, with respect to $X$, since the graphs follows similar patterns. We can also observe that the physical process $Z$ has a greater variation, especially at the beginning of the series, but also in general, compared to the process $Y$. 
 
 
 
