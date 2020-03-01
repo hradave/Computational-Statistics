@@ -107,7 +107,7 @@ plot(res)
 
 In Figure \ref{fig:bootstrap} we can see that the distribution is centered at $-0.348$ and reminds of a normal distribution. The Q-Q plot confirms it. 
 
-Finally, the p-value of the test is $5e-04$. This p-value is very small, therefore we can not reject the null hypothesis.
+Finally, the p-value of the test is $5e-04$, which is a very small p-value. Therefore we can reject the null hypothesis that the lottery is random, meaning that the lottery is non-random. 
 
 ```{r}
 p_value <- sum(res$t >= 0)/(res$R) 
@@ -164,7 +164,7 @@ permutation <- function(data, B) {
 p_value_permutation <- permutation(data, 2000) #0.0775
 ```
 
-The p-value of the permutation test is $0.0775$. This p-value is large and we can reject the null hypothesis. The draw is not random.
+The p-value of the permutation test is $0.0775$. Thus we cannot reject the null hypothesis that the lottery is random, on the significance level $5\%$.
 
 
 ### 5.
@@ -211,7 +211,7 @@ for (e in alphas) {
 p_values
 ```
 
-We can see that the p-values are all $1$. For all $\alpha$ the test never commits the Type 2 error, which means that the test never rejects the Null hypothesis when this one is true.  
+We can see that the p-values are all $1$. For all $\alpha$ the test never commits the Type 2 error, which means that the test never rejects the null hypothesis when this one is true.  
 
 
 
