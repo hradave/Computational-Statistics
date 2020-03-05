@@ -221,6 +221,7 @@ EM_algorithm <- function(X, Z, lambda, eps, k_max) {
 	    
 	    ## E-step
 	    EY <- sum(Z_obs) + (n-r)*sum(exp(X/(2*lambda_prev))*(X/lambda_curr))
+	    #EY <- (sum(Z_obs) + (n-r)*sum(2*lambda_prev/X))/(lambda_curr*2)
 	    print(EY)
 
 	    ## M-step
