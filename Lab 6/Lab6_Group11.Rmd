@@ -200,11 +200,11 @@ Z_{i} \stackrel{}\sim exp\left(\frac{X_{i}}{2\lambda}\right)
 where $\lambda$ is an unknown parameter, we derive the EM algorithm to estimate $\lambda$. The code can be found in the Appendix.
 
 ```{r}
-log_likelihood <- function(X, lambda) {
-  return sum(X/(2*lambda))
-}
+#log_likelihood <- function(X, lambda) {
+#  return sum(X/(2*lambda))
+#}
 
-EM_algorithm <- function(Z, lambda, eps, k_max) {
+EM_algorithm <- function(X, Z, lambda, eps, k_max) {
     Z_obs <- Z[!is.na(Z)]
     Z_miss <- Z[is.na(Z)]
     
@@ -213,27 +213,27 @@ EM_algorithm <- function(Z, lambda, eps, k_max) {
 
     k<-1
     lambda_prev <- lambda
-    lambda_curr <- lambda
-
-    ll_prev<-log_likelihood(Z_obs,lambda)
-    ll_curr<-ll_prev+10+100*eps
+    lambda_curr <- lambda+10+100*eps #random number to initialize the algorithm
     
-    while ((abs(lambda_prev-lambda_curr)>=eps) && (k<(kmax+1))){
-	    llvalprev<-llvalcurr
-	    ## E-step
-	    EY<-sum(Z_obs/(2*lambda_old))
-      #EY <- sum(X/(2*lambda_old))
+    while (k<k_max+1 && abs(lambda_prev-lambda_curr)>=eps) {
+      
+	    lambda_prev<-lambda_curr
 	    
+	    ## E-step
+	    EY <- sum(Z_obs) + (n-r)*sum(exp(X/(2*lambda_prev))*(X/lambda_curr))
+	    print(EY)
+
 	    ## M-step
-	    lambda_curr <- 
-
-	    ## Compute log-likelihood
-	    llvalcurr<-floglik(Yobs,muk,sigma2k,r)
+	    lambda_curr <- EY/n 
+      
 	    k<-k+1
-
-	    print(c(muk,sigma2k,llvalcurr))
+	    #print(c(muk,sigma2k,llvalcurr))
+	    
     }
+    return(c(k-1,lambda_curr))
 }
+
+EM_algorithm(X,Z, 100, 0.001, 100)
 ```
 
 
