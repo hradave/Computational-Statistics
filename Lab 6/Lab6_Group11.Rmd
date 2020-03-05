@@ -3,12 +3,12 @@ title: '732A90: Computational Statistics'
 author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
+  html_document:
+    df_print: paged
   pdf_document:
     fig_caption: yes
     includes:
       in_header: my_header.tex
-  html_document:
-    df_print: paged
 subtitle: Computer lab6 - Group11
 header-includes: \usepackage{float}
 ---
@@ -190,8 +190,51 @@ In Figure \ref{fig:timeseries} it seems that the two processes are related to ea
 
 ### 2.
 
+Using the following model,
 
+\begin{eqnarray*}
+Y_{i} \stackrel{}\sim exp\left(\frac{X_{i}}{\lambda}\right) \\
+Z_{i} \stackrel{}\sim exp\left(\frac{X_{i}}{2\lambda}\right)
+\end{eqnarray*}
 
+where $\lambda$ is an unknown parameter, we derive the EM algorithm to estimate $\lambda$. The code can be found in the Appendix.
+
+```{r}
+log_likelihood <- function(X, lambda) {
+  return sum(X/(2*lambda))
+}
+
+EM_algorithm <- function(Z, lambda, eps, k_max) {
+    Z_obs <- Z[!is.na(Z)]
+    Z_miss <- Z[is.na(Z)]
+    
+    n <- length(c(Z_obs, Z_miss))
+    r <- length(Z_obs)
+
+    k<-1
+    lambda_prev <- lambda
+    lambda_curr <- lambda
+
+    ll_prev<-log_likelihood(Z_obs,lambda)
+    ll_curr<-ll_prev+10+100*eps
+    
+    while ((abs(lambda_prev-lambda_curr)>=eps) && (k<(kmax+1))){
+	    llvalprev<-llvalcurr
+	    ## E-step
+	    EY<-sum(Z_obs/(2*lambda_old))
+      #EY <- sum(X/(2*lambda_old))
+	    
+	    ## M-step
+	    lambda_curr <- 
+
+	    ## Compute log-likelihood
+	    llvalcurr<-floglik(Yobs,muk,sigma2k,r)
+	    k<-k+1
+
+	    print(c(muk,sigma2k,llvalcurr))
+    }
+}
+```
 
 
 ### 3.
