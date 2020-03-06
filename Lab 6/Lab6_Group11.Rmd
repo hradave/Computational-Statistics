@@ -178,14 +178,9 @@ data <- data.frame(X = c(X,X), value = c(Y,Z), Process= rep(c("Y","Z"), each= 10
 # Time series plot 
 ggplot(data = data, aes(x = X, y = value, col = Process)) + 
   geom_line() + 
-<<<<<<< HEAD
-  ylab("Physical process") + 
-  theme_bw()
-=======
   ylab("Physical process")+
   scale_color_manual(values=c( "brown1","deepskyblue1"))
 
->>>>>>> 7c66ee7b00591a1bb881f0fd683a3beac85ecccc
 ```
 
 In Figure \ref{fig:timeseries} it seems that the two processes are related to each other, with respect to $X$, since the graphs follows similar patterns. We can also observe that the physical process $Z$ has a greater variation, especially at the beginning of the series, but also in general, compared to the process $Y$. 
@@ -273,17 +268,25 @@ EM_algorithm <- function(X, Y, Z, lambda, eps, k_max) {
 EM_algorithm(X,Y,Z, 100, 0.001, 100)
 ```
 
-```{r}
 
-```
 
 
 ### 4.
 
-```{r warning=FALSE}
-# R version
-RNGversion('3.5.1')
-# Packages
+```{r, fig.cap="\\label{fig:timeseries2} Time series plot of E[Y] and E[Z] versus X, and the dependence of Z and Y versus X.", out.width = "80%", fig.pos='!h', fig.align='center'}
+# 2.4
+optimal_lambda <- EM_algorithm(X,Y,Z, 100, 0.001, 100)[2]
+# Expected values 
+EY <- optimal_lambda/X
+EZ <- 2*optimal_lambda/X
+
+data2 <- data.frame(X = c(X,X), value = c(Y,Z,EY,EZ), Process= rep(c("Y","Z","E[Y]","E[Z]"), each= 100))
+
+# 
+ggplot(data = data2, aes(x = X, y = value, col = Process)) + 
+  geom_line() + 
+  ylab("Physical process") +
+  scale_color_manual(values=c("brown4", "deepskyblue4", "brown1", "deepskyblue1"))
 
 ```
 
