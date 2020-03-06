@@ -200,13 +200,13 @@ Z_{i} \stackrel{}\sim exp\left(\frac{X_{i}}{2\lambda}\right)
 where $\lambda$ is an unknown parameter, we derive the EM algorithm to estimate $\lambda$. The code can be found in the Appendix.
 
 ```{r}
-#log_likelihood <- function(X, lambda) {
-#  return sum(X/(2*lambda))
-#}
 
 EM_algorithm <- function(X, Z, lambda, eps, k_max) {
     Z_obs <- Z[!is.na(Z)]
     Z_miss <- Z[is.na(Z)]
+    
+    X_obs <- X[!is.na(Z)]
+    X_miss <- X[is.na(Z)]
     
     n <- length(c(Z_obs, Z_miss))
     r <- length(Z_obs)
@@ -220,25 +220,24 @@ EM_algorithm <- function(X, Z, lambda, eps, k_max) {
 	    lambda_prev<-lambda_curr
 	    
 	    ## E-step
-	    EY <- sum(Z_obs) + (n-r)*sum(exp(X/(2*lambda_prev))*(X/lambda_curr))
-	    #EY <- (sum(Z_obs) + (n-r)*sum(2*lambda_prev/X))/(lambda_curr*2)
-	    print(EY)
-
+	    EY <- -n*log(2*lambda_prev) + sum(log(X)) - sum(X_obs*Z_obs)/(2*lambda_prev) - (n-r)*lambda_curr/lambda_prev
+	    
 	    ## M-step
-	    lambda_curr <- EY/n 
-      
+      lambda_curr <- (sum(X_obs*Z_obs)+2*(n-r)*lambda_prev)/n
+	    
 	    k<-k+1
-	    #print(c(muk,sigma2k,llvalcurr))
 	    
     }
-    return(c(k-1,lambda_curr))
+    return(c(number_of_iterations = k-1, optimal_lambda = lambda_curr))
 }
-
-EM_algorithm(X,Z, 100, 0.001, 100)
 ```
 
 
 ### 3.
+```{r}
+
+EM_algorithm(X,Z, 100, 0.001, 100)
+```
 
 
 
