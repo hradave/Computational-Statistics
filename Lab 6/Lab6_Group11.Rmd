@@ -273,6 +273,8 @@ EM_algorithm(X,Y,Z, 100, 0.001, 100)
 
 ### 4.
 
+As a final task, we are going to see if the optimal value $\lambda= 10.69566$ is reasonable for the physical processes $Y = Y (X)$ and $Z = Z(X)$. We examine the results by computing the expected values of $Y$ and $Z$, which is given by $E[Y_i]=\frac{\lambda}{X_i}$ and $E[Z_i]=\frac{2\lambda}{X_i}$, respectively. 
+
 ```{r, fig.cap="\\label{fig:timeseries2} Time series plot of E[Y] and E[Z] versus X, and the dependence of Z and Y versus X.", out.width = "80%", fig.pos='!h', fig.align='center'}
 # 2.4
 optimal_lambda <- EM_algorithm(X,Y,Z, 100, 0.001, 100)[2]
@@ -291,6 +293,7 @@ ggplot(data = data2, aes(x = X, y = value, col = Process)) +
 ```
 
 
+In Figure \ref{fig:timeseries2}, we can see that $E[Y]$ and $E[Z]$ versus $X$ are in the same plot as $Y$ and $Z$ versus $X$. From this plot it is clear that the optimal $\lambda$ is reasonable, since the exponential curves $E[Y]$ and $E[Z]$, the follow their corresponding values of $Y$ and $Z$.
 
 ----------
 
