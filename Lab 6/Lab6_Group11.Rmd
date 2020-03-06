@@ -180,6 +180,10 @@ ggplot(data = data, aes(x = X, y = value, col = Process)) +
   geom_line() + 
   ylab("Physical process")+
   scale_color_manual(values=c( "brown1","deepskyblue1"))
+<<<<<<< HEAD
+=======
+
+>>>>>>> c9fa62c70d1a6f8d952d57068a49c3b4a5e3e2c0
 ```
 
 In Figure \ref{fig:timeseries} it seems that the two processes are related to each other, with respect to $X$, since the graphs follows similar patterns. We can also observe that the physical process $Z$ has a greater variation, especially at the beginning of the series, but also in general, compared to the process $Y$. 
@@ -297,23 +301,38 @@ in $\lambda$ is less than 0.001". This yields the following results.
 EM_algorithm(X,Y,Z, 100, 0.001, 100)
 ```
 
+<<<<<<< HEAD
 As we can see in just 5 iterations we reached the optimal $\lambda$. 
 
 ```{r}
+=======
+>>>>>>> c9fa62c70d1a6f8d952d57068a49c3b4a5e3e2c0
 
-```
 
 
 ### 4.
 
-```{r warning=FALSE}
-# R version
-RNGversion('3.5.1')
-# Packages
+As a final task, we are going to see if the optimal value $\lambda= 10.69566$ is reasonable for the physical processes $Y = Y (X)$ and $Z = Z(X)$. We examine the results by computing the expected values of $Y$ and $Z$, which is given by $E[Y_i]=\frac{\lambda}{X_i}$ and $E[Z_i]=\frac{2\lambda}{X_i}$, respectively. 
+
+```{r, fig.cap="\\label{fig:timeseries2} Time series plot of E[Y] and E[Z] versus X, and the dependence of Z and Y versus X.", out.width = "80%", fig.pos='!h', fig.align='center'}
+# 2.4
+optimal_lambda <- EM_algorithm(X,Y,Z, 100, 0.001, 100)[2]
+# Expected values 
+EY <- optimal_lambda/X
+EZ <- 2*optimal_lambda/X
+
+data2 <- data.frame(X = c(X,X), value = c(Y,Z,EY,EZ), Process= rep(c("Y","Z","E[Y]","E[Z]"), each= 100))
+
+# 
+ggplot(data = data2, aes(x = X, y = value, col = Process)) + 
+  geom_line() + 
+  ylab("Physical process") +
+  scale_color_manual(values=c("brown4", "deepskyblue4", "brown1", "deepskyblue1"))
 
 ```
 
 
+In Figure \ref{fig:timeseries2}, we can see that $E[Y]$ and $E[Z]$ versus $X$ are in the same plot as $Y$ and $Z$ versus $X$. From this plot it is clear that the optimal $\lambda$ is reasonable, since the exponential curves $E[Y]$ and $E[Z]$, the follow their corresponding values of $Y$ and $Z$.
 
 ----------
 
