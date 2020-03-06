@@ -297,7 +297,7 @@ in $\lambda$ is less than 0.001". This yields the following results.
 EM_algorithm(X,Y,Z, 100, 0.001, 100)
 ```
 
-
+As we can see in only 5 iterations we reached the optimal $\lambda$.
 
 ### 4.
 
