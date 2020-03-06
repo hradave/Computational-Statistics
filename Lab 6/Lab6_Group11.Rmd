@@ -148,7 +148,7 @@ By using the defined functions from previous tasks (1.1-1.4), we are going to ob
 genetic(1,0)
 ```
 
-
+\pagebreak
 
 
 # Question 2: EM algorithm
@@ -323,7 +323,7 @@ ggplot(data = data2, aes(x = X, y = value, col = Process)) +
 
 In Figure \ref{fig:timeseries2}, we can see that $E[Y]$ and $E[Z]$ versus $X$ are in the same plot as $Y$ and $Z$ versus $X$. From this plot it is clear that the optimal $\lambda$ is reasonable, since the exponential curves $E[Y]$ and $E[Z]$, the follow their corresponding values of $Y$ and $Z$.
 
-----------
+\pagebreak
 
 # Appendix
 
