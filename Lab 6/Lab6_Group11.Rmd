@@ -3,12 +3,12 @@ title: '732A90: Computational Statistics'
 author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
-  html_document:
-    df_print: paged
   pdf_document:
     fig_caption: yes
     includes:
       in_header: my_header.tex
+  html_document:
+    df_print: paged
 subtitle: Computer lab6 - Group11
 header-includes: \usepackage{float}
 ---
@@ -74,24 +74,35 @@ mutate <- function(x){
 Further, we will create a function called \texttt{genetic()}, with the parameters \texttt{maxiter} and \texttt{mutprob}. The settings of this \texttt{genetic()} function, as well as its output results, are presented in (a)-(e). The code can be found in the Appendix.
 
 
-(a). The function $f()$ is plotted in the range from 0 to 30 in Figure X, and we can observe that there is a maximum value located around $x=1$.
+(a) The function $f()$ is plotted in the range from 0 to 30 in Figure X, and we can observe that there is a maximum value located at $x=1.2$ and the maximum value is 0.2341 (with step size = 0.1). This maximum location is indicated by the blue vertical line.
 
-(b). An initial population for the genetic algorithm is defined as $X = (0, 5, 10, 15,... ,30)$.
+(b) An initial population for the genetic algorithm is defined as $X = (0, 5, 10, 15,... ,30)$.
 
-(c). A vector called \texttt{Values} are computed, containing the function values for each population point.
+(c) A vector called \texttt{Values} are computed, containing the function values for each population point.
 
+(d) The \texttt{genetic()} function performs \texttt{maxiter} iterations. For each iteration:
 
-(d). The \texttt{genetic()} function performs \texttt{maxiter} iterations. For each iteration...
+  i. Two parent indexes are randomly sampled from the current population.
+        
+  ii. A victim index is selected from the current population, which has the smallest objective function value.
+        
+  iii. A new child is produced from parents by \texttt{crossover()}. The new child is \texttt{mutate()}-d with probability \texttt{mutprob}.
+        
+  iv. The victim is replaced by the new child in the population and \texttt{Values} is updated.
+        
+  v. The current maximal value of the objective function is saved.
 
-(e).
+(e) The final observations are added to the current plot as red points.
 
 ```{r}
-#4
-#4
+#1.4
 genetic <- function(maxiter, mutprob){
   #a
-  plot(x = seq(0,30), y = f(seq(0,30)), type = "l", xlab = "x", ylab = "f(x)")
-  abline(v=seq(0,30)[which.max(f(seq(0,30)))], col="red" )
+  plot(x = seq(0,30, by=0.1), y = f(seq(0,30, by=0.1)), 
+       type = "l", xlab = "x", ylab = "f(x)", 
+       main = paste("maxiter:",maxiter,"mutprob:",mutprob))
+  abline(v=seq(0,30, by = 0.1)[which.max(f(seq(0,30,by = 0.1)))], col="blue" )
+  #maximum value: f(1.2) = 0.234
   
   #b
   X = seq(0,30,5)
@@ -100,53 +111,74 @@ genetic <- function(maxiter, mutprob){
   Values = f(X)
   
   #d
-  #set seed
-  set.seed(1234567890)
-  for (i in 1:maxiter) {
-    #i
-    parents = match(sample(X, 2),X)
-    
-    #ii
-    victim = order(Values)[1]
-    
-    #iii
-    kid = round(crossover(parents[1],parents[2]))
-    p = runif(1)
-    if (p < mutprob) {
-      kid = mutate(kid)
-    }
-    
-    #iv
-    X[victim] = kid
-    Values = f(X)
-    
-    #v
-    max = max(Values)
-  }
+    #set seed
+    set.seed(1234567890)
+    max=max(Values)
+    for (i in 1:maxiter) {
+      #i
+      parents = match(sample(X, 2),X)
+      
+      #ii
+      victim = order(Values)[1]
+      
+      #iii
+      kid = crossover(X[parents[1]],X[parents[2]])
+      p = runif(1)
+      if (p < mutprob) {
+        kid = mutate(kid)
+      }
+      
+      #iv
+      X[victim] = kid
+      Values = f(X)
+      
+      #v
+      max = max(Values)
+      }
   
   #e
-  print(X)
-  print(Values)
-  plot(x = seq(0,30), y = f(seq(0,30)), type = "l", xlab = "x", ylab = "f(x)")
   points(x = X, y = Values, col = "red", pch = 19)
+  return(max)
 }
 
-
 ```
-
-
-
 
 
 ### 5.
 
-By using the defined functions from previous tasks (1.1-1.4), we are going to observe the initial population and final population. This is done by running the code with different combinations of \texttt{maxiter}$= 10, 100$ and \texttt{mutprob}$= 0.1, 0.5, 0.9$.
+By using the defined functions from previous tasks (1.1-1.4), we are going to observe the initial population and final population. The final population is calculated by running the code with different combinations of \texttt{maxiter}$= 10, 100$ and \texttt{mutprob}$= 0.1, 0.5, 0.9$. Figure \ref{fig:initial} plots \texttt{f(x)} and its maximum location is indicated by the blue vertical line. The initial population is depicted with the red points.
+
+We can observe what the final populations look like after the runs with different combinations of parameters in figure \ref{fig:genetic}. The table below gives information about the achieved maximum value of the final populations. It is clear that after just 10 iterations the lowest point in the population (at x=5) was replaced by a higher value. Even between the 3 populations that ran for 10 iterations, there are differences. This is because if the newly generated child gets mutated with a higher probability, its value will vary more. After 100 iterations however, all 3 populations seemed to "find" the maximum value of the objective function.
+
+```{r fig.cap="\\label{fig:initial} Initial population (red points)", fig.height = 4, fig.width = 8}
+#1.5
+plot(x = seq(0,30, by=0.1), y = f(seq(0,30, by=0.1)), 
+       type = "l", xlab = "x", ylab = "f(x)")
+abline(v=seq(0,30, by = 0.1)[which.max(f(seq(0,30,by = 0.1)))], col="blue" )
+points(x = seq(0,30,5), y = f(seq(0,30,5)), col = "red", pch = 19)
+```
+
+```{r fig.cap="\\label{fig:genetic} Genetic algorithm maximization", fig.height = 10, fig.width = 10}
+
+
+max_values = data.frame(matrix(nrow = 3, ncol = 2))
+par(mfrow=c(3,2))
+max_values[1,1] = genetic(10,0.1)
+max_values[1,2] = genetic(100,0.1)
+max_values[2,1] = genetic(10,0.5)
+max_values[2,2] = genetic(100,0.5)
+max_values[3,1] = genetic(10,0.9)
+max_values[3,2] = genetic(100,0.9)
+
+rownames(max_values) = c("mutprob 0.1","mutprob 0.5","mutprob 0.9")
+colnames(max_values) = c("maxiter 10","maxiter 100")
+```
 
 
 ```{r}
-# Just testing no change, i.e. initial population
-genetic(1,0)
+knitr::kable(max_values, caption = 'Maximum values')
 ```
+
 
 \pagebreak
 
@@ -160,6 +192,8 @@ The purpose with this exercise is to implement the EM algorithm. For this, we ar
 The first step is to examine the data set \texttt{physical1.csv}, to see if the two processes are related to each other. 
 
 ```{r}
+
+#QUESTION 2
 # 2.1 
 physical <- read.csv2("physical1.csv", sep = ",")
 
@@ -272,7 +306,9 @@ EM_algorithm <- function(X, Y, Z, lambda, eps, k_max) {
 	    lambda_prev<-lambda_curr
 	    
 	    ## E-step
-	    EY <- -n*log(2*lambda_prev^2) + sum(log(X^2)) - sum(X_obs*(Z_obs+2*Y_obs))/(2*lambda_prev) - sum(lambda_curr+X_miss*Y_miss)/lambda_prev 
+	    EY <- -n*log(2*lambda_prev^2) + sum(log(X^2)) - 
+	      sum(X_obs*(Z_obs+2*Y_obs))/(2*lambda_prev) - 
+	      sum(lambda_curr+X_miss*Y_miss)/lambda_prev 
 	    
 	    ## M-step
 	    lambda_curr <- (sum(X_obs*(Z_obs+2*Y_obs)) + 2*sum(lambda_curr+X_miss*Y_miss))/(4*n) 
@@ -310,7 +346,8 @@ optimal_lambda <- EM_algorithm(X,Y,Z, 100, 0.001, 100)[2]
 EY <- optimal_lambda/X
 EZ <- 2*optimal_lambda/X
 
-data2 <- data.frame(X = c(X,X), value = c(Y,Z,EY,EZ), Process= rep(c("Y","Z","E[Y]","E[Z]"), each= 100))
+data2 <- data.frame(X = c(X,X), value = c(Y,Z,EY,EZ), Process= rep(c("Y","Z","E[Y]","E[Z]"), 
+                                                                   each= 100))
 
 # 
 ggplot(data = data2, aes(x = X, y = value, col = Process)) + 
