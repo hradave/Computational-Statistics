@@ -1699,12 +1699,26 @@ f(x):= \frac{x^2}{e^x} -2 \ \text{exp} (-(9\text{sin } x)/(x^2+x+1)).
 Y_{i} \stackrel{}\sim exp\left(\frac{X_{i}}{\lambda}\right) \\
 Z_{i} \stackrel{}\sim exp\left(\frac{X_{i}}{2\lambda}\right)
 \end{eqnarray*}\]</span></p>
-<p>where <span class="math inline">\(\lambda\)</span> is an unknown parameter, we derive the EM algorithm to estimate <span class="math inline">\(\lambda\)</span>. The code can be found in the Appendix.</p>
+<p>where <span class="math inline">\(\lambda\)</span> is an unknown parameter, we derive the EM algorithm to estimate <span class="math inline">\(\lambda\)</span>.</p>
+<p><span class="math inline">\(Y\)</span> and <span class="math inline">\(Z\)</span> are defined by the following density functions, <span class="math display">\[\begin{eqnarray*}
+Z(X) &amp;=&amp;  \frac{X_{i}}{2\lambda}exp\left(-\frac{X_{i}}{2\lambda}Z_{i}\right)\\
+Y(X) &amp;=&amp;  \frac{X_{i}}{\lambda}exp\left(-\frac{X_{i}}{\lambda}Y_{i}\right)
+\end{eqnarray*}\]</span></p>
+<p>Assuming that <span class="math inline">\(Y(X)\)</span> and <span class="math inline">\(Z(X)\)</span> are i.i.d. we can obtain the joint density function, <span class="math display">\[\begin{eqnarray*}
+f(Y,Z) &amp;=&amp;  \frac{X_{i}}{2\lambda}exp\left(-\frac{X_{i}}{2\lambda}Z_{i}\right) * \frac{X_{i}}{\lambda}exp\left(-\frac{X_{i}}{\lambda}Y_{i}\right)\\
+       &amp;=&amp; \frac{X^{2}_{i}}{2\lambda^{2}}
+exp\left[-\frac{X_{i}(Z_{i}-2Y_{i})}{2\lambda}\right]
+\end{eqnarray*}\]</span></p>
+<p>From this point, we compute the likelihood of the distribution,</p>
+<p><span class="math display">\[\begin{eqnarray*}
+\mathcal{L}(Y,Z|X,\lambda) = \prod_{i=1}^{n}\frac{X^{2}_{i}}{2\lambda^{2}}exp\left[-\frac{X_{i}(Z_{i}-2Y_{i})}{2\lambda}\right]
+\end{eqnarray*}\]</span></p>
+<p>The code can be found in the Appendix.</p>
 </div>
 <div id="section-7" class="section level3">
 <h3>3.</h3>
 <pre><code>## number_of_iterations       optimal_lambda 
-##             5.000000            -1.492704</code></pre>
+##             5.000000            -1.492705</code></pre>
 </div>
 <div id="section-8" class="section level3">
 <h3>4.</h3>
@@ -1779,7 +1793,7 @@ genetic &lt;- function(maxiter, mutprob){
 
 # Just testing no change, i.e. initial population
 genetic(1,0)
-# 1.1 
+# 2.1 
 physical &lt;- read.csv2(&quot;physical1.csv&quot;, sep = &quot;,&quot;)
 
 X &lt;- as.numeric(as.character(physical$X))
@@ -1797,8 +1811,9 @@ ggplot(data = data, aes(x = X, y = value, col = Process)) +
   ylab(&quot;Physical process&quot;) + 
   theme_bw()
 
+## 2.2 
 
-EM_algorithm &lt;- function(X, Z, lambda, eps, k_max) {
+EM_algorithm &lt;- function(X, Y, Z, lambda, eps, k_max) {
     Z_obs &lt;- Z[!is.na(Z)]
     Z_miss &lt;- Z[is.na(Z)]
     
@@ -1812,8 +1827,8 @@ EM_algorithm &lt;- function(X, Z, lambda, eps, k_max) {
     r &lt;- length(Z_obs)
 
     k&lt;-1
-    lambda_prev &lt;- lambda
-    lambda_curr &lt;- lambda+10+100*eps #random number to initialize the algorithm
+    lambda_prev &lt;- lambda+10+100*eps #random number to initialize the algorithm
+    lambda_curr &lt;- lambda
     
     while (k&lt;k_max+1 &amp;&amp; abs(lambda_prev-lambda_curr)&gt;=eps) {
       
@@ -1830,7 +1845,10 @@ EM_algorithm &lt;- function(X, Z, lambda, eps, k_max) {
     }
     return(c(number_of_iterations = k-1, optimal_lambda = lambda_curr))
 }
-EM_algorithm(X,Z, 100, 0.001, 100)
+
+##2.3
+
+EM_algorithm(X,Y,Z, 100, 0.001, 100)
 
 # R version
 RNGversion(&#39;3.5.1&#39;)

@@ -160,7 +160,7 @@ The purpose with this exercise is to implement the EM algorithm. For this, we ar
 The first step is to examine the data set \texttt{physical1.csv}, to see if the two processes are related to each other. 
 
 ```{r}
-# 1.1 
+# 2.1 
 physical <- read.csv2("physical1.csv", sep = ",")
 
 X <- as.numeric(as.character(physical$X))
@@ -180,7 +180,6 @@ ggplot(data = data, aes(x = X, y = value, col = Process)) +
   geom_line() + 
   ylab("Physical process") + 
   theme_bw()
-
 ```
 
 In Figure \ref{fig:timeseries} it seems that the two processes are related to each other, with respect to $X$, since the graphs follows similar patterns. We can also observe that the physical process $Z$ has a greater variation, especially at the beginning of the series, but also in general, compared to the process $Y$. 
@@ -197,9 +196,33 @@ Y_{i} \stackrel{}\sim exp\left(\frac{X_{i}}{\lambda}\right) \\
 Z_{i} \stackrel{}\sim exp\left(\frac{X_{i}}{2\lambda}\right)
 \end{eqnarray*}
 
-where $\lambda$ is an unknown parameter, we derive the EM algorithm to estimate $\lambda$. The code can be found in the Appendix.
+where $\lambda$ is an unknown parameter, we derive the EM algorithm to estimate $\lambda$.
+
+$Y$ and $Z$ are defined by the following density functions,
+\begin{eqnarray*}
+Z(X) &=&  \frac{X_{i}}{2\lambda}exp\left(-\frac{X_{i}}{2\lambda}Z_{i}\right)\\
+Y(X) &=&  \frac{X_{i}}{\lambda}exp\left(-\frac{X_{i}}{\lambda}Y_{i}\right)
+\end{eqnarray*}
+
+
+Assuming that $Y(X)$ and $Z(X)$ are i.i.d. we can obtain the joint density function,
+\begin{eqnarray*}
+f(Y,Z) &=&  \frac{X_{i}}{2\lambda}exp\left(-\frac{X_{i}}{2\lambda}Z_{i}\right) * \frac{X_{i}}{\lambda}exp\left(-\frac{X_{i}}{\lambda}Y_{i}\right)\\
+       &=& \frac{X^{2}_{i}}{2\lambda^{2}}
+exp\left[-\frac{X_{i}(Z_{i}-2Y_{i})}{2\lambda}\right]
+\end{eqnarray*}
+
+From this point, we compute the likelihood of the distribution,
+
+\begin{eqnarray*}
+\mathcal{L}(Y,Z|X,\lambda) = \prod_{i=1}^{n}\frac{X^{2}_{i}}{2\lambda^{2}}exp\left[-\frac{X_{i}(Z_{i}-2Y_{i})}{2\lambda}\right]
+\end{eqnarray*}
+
+The code can be found in the Appendix.
 
 ```{r}
+
+## 2.2 
 
 EM_algorithm <- function(X, Y, Z, lambda, eps, k_max) {
     Z_obs <- Z[!is.na(Z)]
@@ -223,10 +246,10 @@ EM_algorithm <- function(X, Y, Z, lambda, eps, k_max) {
 	    lambda_prev<-lambda_curr
 	    
 	    ## E-step
-	    EY <- -n*log(2*lambda_prev^2) + sum(log(X^2)) - sum(X_obs*(Z_obs-2*Y_obs))/(2*lambda_prev) - sum(lambda_curr-X_miss*Y_miss)/lambda_prev 
+	    EY <- -n*log(2*lambda_prev^2) + sum(log(X^2)) - sum(X_obs*(Z_obs+2*Y_obs))/(2*lambda_prev) - sum(lambda_curr+X_miss*Y_miss)/lambda_prev 
 	    
 	    ## M-step
-	    lambda_curr <- (sum(X_obs*(Z_obs-2*Y_obs)) + 2*sum(lambda_curr-X_miss*Y_miss))/(4*n) 
+	    lambda_curr <- (sum(X_obs*(Z_obs+2*Y_obs)) + 2*sum(lambda_curr+X_miss*Y_miss))/(4*n) 
 	    
 	    k<-k+1
 	    
@@ -238,6 +261,9 @@ EM_algorithm <- function(X, Y, Z, lambda, eps, k_max) {
 
 ### 3.
 ```{r}
+
+##2.3
+
 EM_algorithm(X,Y,Z, 100, 0.001, 100)
 ```
 
