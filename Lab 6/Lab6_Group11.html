@@ -12,7 +12,7 @@
 
 <meta name="author" content="Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki" />
 
-<meta name="date" content="2020-03-04" />
+<meta name="date" content="2020-03-06" />
 
 <title>732A90: Computational Statistics</title>
 
@@ -1637,7 +1637,7 @@ summary {
 <h1 class="title toc-ignore">732A90: Computational Statistics</h1>
 <h3 class="subtitle">Computer lab6 - Group11</h3>
 <h4 class="author">Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki</h4>
-<h4 class="date">04 March 2020</h4>
+<h4 class="date">06 March 2020</h4>
 
 </div>
 
@@ -1699,9 +1699,12 @@ f(x):= \frac{x^2}{e^x} -2 \ \text{exp} (-(9\text{sin } x)/(x^2+x+1)).
 Y_{i} \stackrel{}\sim exp\left(\frac{X_{i}}{\lambda}\right) \\
 Z_{i} \stackrel{}\sim exp\left(\frac{X_{i}}{2\lambda}\right)
 \end{eqnarray*}\]</span></p>
+<p>where <span class="math inline">\(\lambda\)</span> is an unknown parameter, we derive the EM algorithm to estimate <span class="math inline">\(\lambda\)</span>. The code can be found in the Appendix.</p>
 </div>
 <div id="section-7" class="section level3">
 <h3>3.</h3>
+<pre><code>## number_of_iterations       optimal_lambda 
+##             5.000000            -1.492704</code></pre>
 </div>
 <div id="section-8" class="section level3">
 <h3>4.</h3>
@@ -1793,6 +1796,41 @@ ggplot(data = data, aes(x = X, y = value, col = Process)) +
   geom_line() + 
   ylab(&quot;Physical process&quot;) + 
   theme_bw()
+
+
+EM_algorithm &lt;- function(X, Z, lambda, eps, k_max) {
+    Z_obs &lt;- Z[!is.na(Z)]
+    Z_miss &lt;- Z[is.na(Z)]
+    
+    X_obs &lt;- X[!is.na(Z)]
+    X_miss &lt;- X[is.na(Z)]
+    
+    Y_obs &lt;- Y[!is.na(Z)]
+    Y_miss &lt;- Y[is.na(Z)]
+    
+    n &lt;- length(c(Z_obs, Z_miss))
+    r &lt;- length(Z_obs)
+
+    k&lt;-1
+    lambda_prev &lt;- lambda
+    lambda_curr &lt;- lambda+10+100*eps #random number to initialize the algorithm
+    
+    while (k&lt;k_max+1 &amp;&amp; abs(lambda_prev-lambda_curr)&gt;=eps) {
+      
+        lambda_prev&lt;-lambda_curr
+        
+        ## E-step
+        EY &lt;- -n*log(2*lambda_prev^2) + sum(log(X^2)) - sum(X_obs*(Z_obs-2*Y_obs))/(2*lambda_prev) - sum(lambda_curr-X_miss*Y_miss)/lambda_prev 
+        
+        ## M-step
+        lambda_curr &lt;- (sum(X_obs*(Z_obs-2*Y_obs)) + 2*sum(lambda_curr-X_miss*Y_miss))/(4*n) 
+        
+        k&lt;-k+1
+        
+    }
+    return(c(number_of_iterations = k-1, optimal_lambda = lambda_curr))
+}
+EM_algorithm(X,Z, 100, 0.001, 100)
 
 # R version
 RNGversion(&#39;3.5.1&#39;)
