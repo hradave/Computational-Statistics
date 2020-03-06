@@ -148,7 +148,7 @@ By using the defined functions from previous tasks (1.1-1.4), we are going to ob
 genetic(1,0)
 ```
 
-
+\pagebreak
 
 
 # Question 2: EM algorithm
@@ -180,10 +180,6 @@ ggplot(data = data, aes(x = X, y = value, col = Process)) +
   geom_line() + 
   ylab("Physical process")+
   scale_color_manual(values=c( "brown1","deepskyblue1"))
-<<<<<<< HEAD
-=======
-
->>>>>>> c9fa62c70d1a6f8d952d57068a49c3b4a5e3e2c0
 ```
 
 In Figure \ref{fig:timeseries} it seems that the two processes are related to each other, with respect to $X$, since the graphs follows similar patterns. We can also observe that the physical process $Z$ has a greater variation, especially at the beginning of the series, but also in general, compared to the process $Y$. 
@@ -301,13 +297,8 @@ in $\lambda$ is less than 0.001". This yields the following results.
 EM_algorithm(X,Y,Z, 100, 0.001, 100)
 ```
 
-<<<<<<< HEAD
+
 As we can see in just 5 iterations we reached the optimal $\lambda$. 
-
-```{r}
-=======
->>>>>>> c9fa62c70d1a6f8d952d57068a49c3b4a5e3e2c0
-
 
 
 ### 4.
@@ -334,7 +325,7 @@ ggplot(data = data2, aes(x = X, y = value, col = Process)) +
 
 In Figure \ref{fig:timeseries2}, we can see that $E[Y]$ and $E[Z]$ versus $X$ are in the same plot as $Y$ and $Z$ versus $X$. From this plot it is clear that the optimal $\lambda$ is reasonable, since the exponential curves $E[Y]$ and $E[Z]$, the follow their corresponding values of $Y$ and $Z$.
 
-----------
+\pagebreak
 
 # Appendix
 
