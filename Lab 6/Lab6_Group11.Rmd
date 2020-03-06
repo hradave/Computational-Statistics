@@ -178,8 +178,8 @@ data <- data.frame(X = c(X,X), value = c(Y,Z), Process= rep(c("Y","Z"), each= 10
 # Time series plot 
 ggplot(data = data, aes(x = X, y = value, col = Process)) + 
   geom_line() + 
-  ylab("Physical process") + 
-  theme_bw()
+  ylab("Physical process")+
+  scale_color_manual(values=c( "brown1","deepskyblue1"))
 
 ```
 
