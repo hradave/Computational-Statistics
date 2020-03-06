@@ -208,6 +208,9 @@ EM_algorithm <- function(X, Z, lambda, eps, k_max) {
     X_obs <- X[!is.na(Z)]
     X_miss <- X[is.na(Z)]
     
+    Y_obs <- Y[!is.na(Z)]
+    Y_miss <- Y[is.na(Z)]
+    
     n <- length(c(Z_obs, Z_miss))
     r <- length(Z_obs)
 
@@ -220,10 +223,10 @@ EM_algorithm <- function(X, Z, lambda, eps, k_max) {
 	    lambda_prev<-lambda_curr
 	    
 	    ## E-step
-	    EY <- -n*log(2*lambda_prev) + sum(log(X)) - sum(X_obs*Z_obs)/(2*lambda_prev) - (n-r)*lambda_curr/lambda_prev
+	    EY <- -n*log(2*lambda_prev^2) + sum(log(X^2)) - sum(X_obs*(Z_obs-2*Y_obs))/(2*lambda_prev) - sum(lambda_curr-X_miss*Y_miss)/lambda_prev 
 	    
 	    ## M-step
-      lambda_curr <- (sum(X_obs*Z_obs)+2*(n-r)*lambda_prev)/n
+	    lambda_curr <- (sum(X_obs*(Z_obs-2*Y_obs)) + 2*sum(lambda_curr-X_miss*Y_miss))/(4*n) 
 	    
 	    k<-k+1
 	    
@@ -235,22 +238,11 @@ EM_algorithm <- function(X, Z, lambda, eps, k_max) {
 
 ### 3.
 ```{r}
-
 EM_algorithm(X,Z, 100, 0.001, 100)
 ```
 
 
-
-
-
 ### 4.
-
-
-
-
-
-
-
 
 ```{r warning=FALSE}
 # R version
