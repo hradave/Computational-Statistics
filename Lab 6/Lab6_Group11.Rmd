@@ -3,12 +3,12 @@ title: '732A90: Computational Statistics'
 author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
-  html_document:
-    df_print: paged
   pdf_document:
     fig_caption: yes
     includes:
       in_header: my_header.tex
+  html_document:
+    df_print: paged
 subtitle: Computer lab6 - Group11
 header-includes: \usepackage{float}
 ---
@@ -178,8 +178,14 @@ data <- data.frame(X = c(X,X), value = c(Y,Z), Process= rep(c("Y","Z"), each= 10
 # Time series plot 
 ggplot(data = data, aes(x = X, y = value, col = Process)) + 
   geom_line() + 
+<<<<<<< HEAD
   ylab("Physical process") + 
   theme_bw()
+=======
+  ylab("Physical process")+
+  scale_color_manual(values=c( "brown1","deepskyblue1"))
+
+>>>>>>> 7c66ee7b00591a1bb881f0fd683a3beac85ecccc
 ```
 
 In Figure \ref{fig:timeseries} it seems that the two processes are related to each other, with respect to $X$, since the graphs follows similar patterns. We can also observe that the physical process $Z$ has a greater variation, especially at the beginning of the series, but also in general, compared to the process $Y$. 
