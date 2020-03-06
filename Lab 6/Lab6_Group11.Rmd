@@ -201,7 +201,7 @@ where $\lambda$ is an unknown parameter, we derive the EM algorithm to estimate 
 
 ```{r}
 
-EM_algorithm <- function(X, Z, lambda, eps, k_max) {
+EM_algorithm <- function(X, Y, Z, lambda, eps, k_max) {
     Z_obs <- Z[!is.na(Z)]
     Z_miss <- Z[is.na(Z)]
     
@@ -215,8 +215,8 @@ EM_algorithm <- function(X, Z, lambda, eps, k_max) {
     r <- length(Z_obs)
 
     k<-1
-    lambda_prev <- lambda
-    lambda_curr <- lambda+10+100*eps #random number to initialize the algorithm
+    lambda_prev <- lambda+10+100*eps #random number to initialize the algorithm
+    lambda_curr <- lambda
     
     while (k<k_max+1 && abs(lambda_prev-lambda_curr)>=eps) {
       
@@ -238,7 +238,11 @@ EM_algorithm <- function(X, Z, lambda, eps, k_max) {
 
 ### 3.
 ```{r}
-EM_algorithm(X,Z, 100, 0.001, 100)
+EM_algorithm(X,Y,Z, 100, 0.001, 100)
+```
+
+```{r}
+
 ```
 
 
