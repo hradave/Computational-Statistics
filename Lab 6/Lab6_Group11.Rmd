@@ -3,12 +3,12 @@ title: '732A90: Computational Statistics'
 author: "Sofie Jörgensen, Oriol Garrobé Guilera, David Hrabovszki"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
+  html_document:
+    df_print: paged
   pdf_document:
     fig_caption: yes
     includes:
       in_header: my_header.tex
-  html_document:
-    df_print: paged
 subtitle: Computer lab6 - Group11
 header-includes: \usepackage{float}
 ---
@@ -178,14 +178,8 @@ data <- data.frame(X = c(X,X), value = c(Y,Z), Process= rep(c("Y","Z"), each= 10
 # Time series plot 
 ggplot(data = data, aes(x = X, y = value, col = Process)) + 
   geom_line() + 
-<<<<<<< HEAD
-  ylab("Physical process") + 
-  theme_bw()
-=======
   ylab("Physical process")+
   scale_color_manual(values=c( "brown1","deepskyblue1"))
-
->>>>>>> 7c66ee7b00591a1bb881f0fd683a3beac85ecccc
 ```
 
 In Figure \ref{fig:timeseries} it seems that the two processes are related to each other, with respect to $X$, since the graphs follows similar patterns. We can also observe that the physical process $Z$ has a greater variation, especially at the beginning of the series, but also in general, compared to the process $Y$. 
@@ -215,14 +209,40 @@ Assuming that $Y(X)$ and $Z(X)$ are i.i.d. we can obtain the joint density funct
 \begin{eqnarray*}
 f(Y,Z) &=&  \frac{X_{i}}{2\lambda}exp\left(-\frac{X_{i}}{2\lambda}Z_{i}\right) * \frac{X_{i}}{\lambda}exp\left(-\frac{X_{i}}{\lambda}Y_{i}\right)\\
        &=& \frac{X^{2}_{i}}{2\lambda^{2}}
-exp\left[-\frac{X_{i}(Z_{i}-2Y_{i})}{2\lambda}\right]
+exp\left[-\frac{X_{i}(Z_{i}+2Y_{i})}{2\lambda}\right]
 \end{eqnarray*}
 
 From this point, we compute the likelihood of the distribution,
 
 \begin{eqnarray*}
-\mathcal{L}(Y,Z|X,\lambda) = \prod_{i=1}^{n}\frac{X^{2}_{i}}{2\lambda^{2}}exp\left[-\frac{X_{i}(Z_{i}-2Y_{i})}{2\lambda}\right]
+\mathcal{L}(Y,Z|X,\lambda) = \prod_{i=1}^{n}\frac{X^{2}_{i}}{2\lambda^{2}}exp\left[-\frac{X_{i}(Z_{i}+2Y_{i})}{2\lambda}\right]
 \end{eqnarray*}
+
+It is easier to work with the logarithm of the likelihood, therefore,
+\begin{eqnarray*}
+log\mathcal{L}(Y,Z|X,\lambda) &=& log\prod_{i=1}^{n}\frac{X^{2}_{i}}{2\lambda^{2}}exp\left[-\frac{X_{i}(Z_{i}+2Y_{i})}{2\lambda}\right] \\
+                              &=& -nlog(2\lambda^{2}) + \sum^{n}_{i}log(X^{2}_{i}) - \sum^{n}_{i}\frac{X_{i}}{2\lambda}(Z_{i}+2Y_{i})
+\end{eqnarray*}
+
+**E-Step**
+\begin{eqnarray*}
+Q(\lambda,lambda^{k}) &=& E\left[log\mathcal{L}(Y,Z|X,\lambda)\right] \\
+                      &=& -nlog(2\lambda^{2}) + \sum^{n}_{1}log(X^{2}_{i}) - \frac{1}{2\lambda}\sum^{r}_{1}X_{i}(Z_{i}+2Y_{i}) - \frac{1}{2\lambda}\sum^{n}_{r+1}X_{i}(E[Z_{i}]+2Y_{i}) \\
+                      &=& -nlog(2\lambda^{2}) + \sum^{n}_{1}log(X^{2}_{i}) - \frac{1}{2\lambda}\sum^{r}_{1}X_{i}(Z_{i}+2Y_{i}) - \frac{1}{2\lambda}\sum^{n}_{r+1}X_{i}(\frac{2\lambda^{k}}{X_{i}}+2Y_{i}) \\
+                      &=& -nlog(2\lambda^{2}) + \sum^{n}_{1}log(X^{2}_{i}) - \frac{1}{2\lambda}\sum^{r}_{1}X_{i}(Z_{i}+2Y_{i}) - \frac{1}{\lambda}\sum^{n}_{r+1}(\lambda^{k} + X_{i}Y_{i}) \\
+\end{eqnarray*}
+
+**M-Step**
+\begin{eqnarray*}
+\frac{\partial Q(\lambda,\lambda^{k})}{\partial\lambda} &=& 0 \\
+\frac{\partial Q(\lambda,\lambda^{k})}{\partial\lambda} &=& -\frac{2n}{\lambda} + \frac{1}{2\lambda^{2}}\sum^{r}_{1}X_{i}(Z_{i}+2Y_{i}) + \frac{1}{\lambda^{2}}\sum^{n}_{r+1}(\lambda^{k} + X_{i}Y_{i})
+\end{eqnarray*}
+
+Therefore,
+\begin{eqnarray*}
+\lambda = \frac{\sum^{r}_{1}X_{i}(Z_{i}+2Y_{i}) + 2\sum^{n}_{r+1}(\lambda^{k} + X_{i}Y_{i})}{4n}
+\end{eqnarray*}
+
 
 The code can be found in the Appendix.
 
@@ -266,12 +286,18 @@ EM_algorithm <- function(X, Y, Z, lambda, eps, k_max) {
 
 
 ### 3.
+
+Once we have the EM algorithm, we run it with initial value $\lambda_{0}=100$ and convergence criterion "stop if the change
+in $\lambda$ is less than 0.001". This yields the following results. 
+
 ```{r}
 
 ##2.3
 
 EM_algorithm(X,Y,Z, 100, 0.001, 100)
 ```
+
+As we can see in just 5 iterations we reached the optimal $\lambda$. 
 
 ```{r}
 
