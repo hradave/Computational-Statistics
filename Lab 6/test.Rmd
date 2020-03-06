@@ -1,3 +1,16 @@
+---
+title: "test"
+author: "David Hrabovszki"
+date: "3/6/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+```{r warning=FALSE}
 ############# QUESTION 1 ##############
 # R version
 RNGversion('3.5.1')
@@ -29,7 +42,6 @@ genetic <- function(maxiter, mutprob){
   plot(x = seq(0,30, by=0.1), y = f(seq(0,30, by=0.1)), 
        type = "l", xlab = "x", ylab = "f(x)", main = paste("maxiter:",maxiter,"mutprob:",mutprob))
   abline(v=seq(0,30, by = 0.1)[which.max(f(seq(0,30,by = 0.1)))], col="blue" )
-  
   #maximum value: f(1.2) = 0.234
   
   #b
@@ -68,6 +80,13 @@ genetic <- function(maxiter, mutprob){
   points(x = X, y = Values, col = "red", pch = 19)
   return(max)
 }
+
+```
+
+
+```{r fig2, fig.height = 10, fig.width = 10}
+
+
 max_values = data.frame(matrix(nrow = 3, ncol = 2))
 par(mfrow=c(3,2))
 max_values[1,1] = genetic(10,0.1)
@@ -76,3 +95,12 @@ max_values[2,1] = genetic(10,0.5)
 max_values[2,2] = genetic(100,0.5)
 max_values[3,1] = genetic(10,0.9)
 max_values[3,2] = genetic(100,0.9)
+
+rownames(max_values) = c("mutprob 0.1","mutprob 0.5","mutprob 0.9")
+colnames(max_values) = c("maxiter 10","maxiter 100")
+```
+
+```{r}
+knitr::kable(max_values, caption = 'Maximum values')
+```
+
